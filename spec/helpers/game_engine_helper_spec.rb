@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe GameEngineHelper do
-  describe "deck creation" do
-  	pending "Add some examples to deck creation"
-  end
-  it "should answer" do
-  	helper.answer.should == 42
+  describe "new game" do
+  	it "deck contains all cards" do
+  		game = helper.create_game
+  		game.should have(36).deck_cards
+  	end
   end
 end
