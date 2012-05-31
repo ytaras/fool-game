@@ -16,12 +16,13 @@ module GameEngineHelper
 	end
 
 	class Game
-		attr_reader :deck_cards, :player1_cards, :player2_cards
+		attr_reader :deck_cards, :player1_cards, :player2_cards, :trump
 
 		def initialize(starting_deck)
 			@deck_cards = starting_deck.to_a
 			@player1_cards = []
 			@player2_cards = []
+			@trump = @deck_cards.last.suit
 		end
 
 		def next_move

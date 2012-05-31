@@ -11,6 +11,10 @@ describe GameEngineHelper do
 	  		@game.deck_cards.should =~ helper.sorted_deck
 	  		@game.deck_cards.should_not == helper.sorted_deck
 	  	end
+
+	  	it "knows the trump" do
+	  		@game.trump.should == @game.deck_cards.last.suit
+	  	end
 	  end
 
   	describe "players" do
