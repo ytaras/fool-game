@@ -7,13 +7,14 @@ describe GameEngineHelper do
 	end
   	describe "deck" do
 	  	it "deck contains all cards" do
-	  		@game.should have(36).deck_cards
-	  		@game.deck_cards.should =~ helper.sorted_deck
-	  		@game.deck_cards.should_not == helper.sorted_deck
+	  		@game.should have(36 - 6 - 6).deck_cards
+	  		all_cards = @game.deck_cards + @game.player1_cards + @game.player2_cards
+	  		all_cards.should =~ helper.sorted_deck
+	  		all_cards.should_not == helper.sorted_deck
 	  	end
 
 	  	it "knows the trump" do
-	  		@game.trump.should == @game.deck_cards.last.suit
+	  		@game.trump.should == @game.deck_cards.first.suit
 	  	end
 	end
 
@@ -29,13 +30,7 @@ describe GameEngineHelper do
 	end
 
   	describe "players" do
-		it "not have cards on start" do
-			@game.should have(0).player1_cards
-			@game.should have(0).player2_cards
-		end
-
-		it "have 6 cards each after draw" do
-			@game.next_move
+		it "have 6 cards each on start" do
 			@game.should have(6).player1_cards
 			@game.should have(6).player2_cards
 		end

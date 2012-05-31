@@ -14,6 +14,7 @@ module GameEngineHelper
 		cards
 	end
 
+	# TODO This probably should be moved to model
 	class Game
 		attr_accessor :current_move
 		attr_reader :deck_cards, :player1_cards, :player2_cards, :trump
@@ -22,7 +23,8 @@ module GameEngineHelper
 			@deck_cards = starting_deck.to_a
 			@player1_cards = []
 			@player2_cards = []
-			@trump = @deck_cards.last.suit
+			@trump = @deck_cards.first.suit
+			next_move
 		end
 
 		def next_move
