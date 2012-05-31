@@ -1,10 +1,7 @@
 module GameEngineHelper
-	SUITS = %w(spade heart diamond club)
-	# TODO I don't know if it's good idea to mix numbers and symbols
-	CARDS = %w(6 7 8 9 10 jack queen king ace)
+	SUITS = %w(Spade Heart Diamond Club)
+	CARDS = %w(6 7 8 9 10 Jack Queen King Ace)
 	
-	Card = Struct.new(:suit, :card)
-
 	def create_game(starting_deck = nil)
 		starting_deck = sorted_deck.shuffle unless starting_deck
 		Game.new(starting_deck)
@@ -36,16 +33,26 @@ module GameEngineHelper
 				p2_trump = smallest_trump(:player2)
 				if(p1_trump.nil?)
 					@current_move = :player2
-				elsif p1_trump.nil?
+				elsif p2_trump.nil?
 			 		@current_move = :player1
 			 	elsif p1_trump < p2_trump
 			 		@current_move = :player1
 				else
 					@current_move = :player2
 				end
-			else
 			end
 		end
+
+		def to_s
+			"""
+			Game
+				Deck #{deck_cards}
+				Player1 #{player1_cards}
+				Player2 #{player2_cards}
+				Trump #{trump}
+				Current move #{current_move}
+			"""
+		end		
 
 		private 
 
@@ -60,6 +67,21 @@ module GameEngineHelper
 			if(cards_to_draw > 0)
 				deck_cards.pop(cards_to_draw).each { |it| player_cards.push(it) }
 			end
+		end
+	end
+
+	class Card
+		attr_reader :suit, :card
+		def initialize(suit, card)
+			@suit = suit
+			@card = card
+		end
+		def to_s
+			"#{card} of #{suit}"
+		end
+
+		def ==(other)
+			@suit == other.suit && @card == other.card
 		end
 	end
 end
