@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe GameEngineHelper do
-  pending "add some examples to (or delete) #{__FILE__}"
   describe "deck creation" do
   	pending "Add some examples to deck creation"
   end
