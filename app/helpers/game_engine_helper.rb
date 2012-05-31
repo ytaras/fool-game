@@ -6,7 +6,13 @@ module GameEngineHelper
 	Card = Struct.new(:suit, :card)
 
 	def create_game
-		Game.new(generate_deck)
+		Game.new(sorted_deck.shuffle)
+	end
+
+	def sorted_deck
+		cards = Array.new
+		SUITS.each { |suit| CARDS.each { |card| cards.push Card.new(suit, card) }}
+		cards
 	end
 
 	class Game
@@ -15,13 +21,5 @@ module GameEngineHelper
 		def initialize(starting_deck)
 			@deck_cards = starting_deck.to_a
 		end
-	end
-
-	private
-
-	def generate_deck
-		cards = Array.new
-		SUITS.each { |suit| CARDS.each { |card| cards.push Card.new(suit, card) }}
-		cards
 	end
 end
