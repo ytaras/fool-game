@@ -13,32 +13,21 @@ class Game
 	end
 
 	attr_accessor :current_move
-	attr_reader :deck_cards, :player_cards, :trump, :table
+	attr_reader :deck_cards, :player_cards, :trump, :table, :discarded
 
 	def initialize(starting_deck)
 		@deck_cards = starting_deck.to_a
 		@player_cards = {:player1 => [], :player2 => []}
 		@trump = @deck_cards.first.suit
 		@table = {}
+		@discarded = []
 		next_move
 	end
 
-	def next_move
-		draw_cards(:player1)
-		draw_cards(:player2)
-		if(@current_move.nil?)
-			p1_trump = smallest_trump(:player1)
-			p2_trump = smallest_trump(:player2)
-			if(p1_trump.nil?)
-				@current_move = :player2
-			elsif p2_trump.nil?
-		 		@current_move = :player1
-		 	elsif p1_trump < p2_trump
-		 		@current_move = :player1
-			else
-				@current_move = :player2
-			end
-		end
+	def turn
+		table_cards.each { |e| @discarded.push e }
+		table.clear
+		next_move
 	end
 
 	def put(card)
@@ -51,8 +40,9 @@ class Game
 
 	def take
 		cards = player_cards[current_defense]
-		(table.keys + table.values.compact).each { |e| cards.push(e) }
-		next_move	
+		table_cards.each { |e| cards.push(e) }
+		table.clear
+		next_move(false)
 	end
 
 	def available
@@ -87,6 +77,10 @@ class Game
 
 	private
 
+	def table_cards
+		table.keys + table.values.compact
+	end
+
 	def draw_cards(player)
 		cards = player_cards[player]
 		cards_to_draw = 6 - cards.size
@@ -105,6 +99,26 @@ class Game
 			:player2
 		else
 			:player1
+		end
+	end
+
+	def next_move(turn = true)
+		draw_cards(:player1)
+		draw_cards(:player2)
+		if(@current_move.nil?)
+			p1_trump = smallest_trump(:player1)
+			p2_trump = smallest_trump(:player2)
+			if(p1_trump.nil?)
+				@current_move = :player2
+			elsif p2_trump.nil?
+		 		@current_move = :player1
+		 	elsif p1_trump < p2_trump
+		 		@current_move = :player1
+			else
+				@current_move = :player2
+			end
+		elsif turn
+			@current_move = current_defense
 		end
 	end
 

@@ -18,13 +18,16 @@ describe Game do
 	  	end
 
 	  	it "table is empty" do
-			@game.should have(0).table
+			@game.table.should be_empty
+		end
+
+		it "discarded is empty" do
+			@game.discarded.should be_empty
 		end
 
 		it "gives first turn to a gamer with lowest trump" do
 			start_deck = Game::CARDS.map {|it| Card.new(:heart, it)}
 			@game = Game.create_game(start_deck)
-			@game.next_move
 			@game.trump.should == :heart
 			@game.player2_cards.map { |it| it.card }.should include("6")
 			@game.current_move.should == :player2
@@ -115,12 +118,12 @@ describe Game do
 			end
 		end
 
-		describe "take" do
+		describe "end turn" do
 			before(:each) do
 				@game = Game.new(Array.new(Game::SORTED_DECK))
 			end
 
-			it "should take all cards from table to defending player" do
+			it "takes all cards from table to defending player" do
 				@game.put(@game.player2_cards.last)
 				card_on_table = @game.table.keys.first
 				@game.take
@@ -128,6 +131,19 @@ describe Game do
 				@game.current_move.should == :player2
 				@game.should have(6).player2_cards
 				@game.should have(7).player1_cards
+				@game.table.should be_empty
+			end
+
+			it "puts all cards to discarded" do
+				@game.put(@game.player2_cards.last)
+				card_on_table = @game.table.keys.first
+				@game.beat(card_on_table, @game.player1_cards.first)
+				@game.turn
+				@game.should have(2).discarded
+				@game.table.should be_empty
+				@game.current_move.should == :player1
+				@game.should have(6).player1_cards
+				@game.should have(6).player2_cards
 			end
 		end
 	end
