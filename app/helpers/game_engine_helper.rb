@@ -17,13 +17,14 @@ module GameEngineHelper
 	# TODO This probably should be moved to model
 	class Game
 		attr_accessor :current_move
-		attr_reader :deck_cards, :player1_cards, :player2_cards, :trump
+		attr_reader :deck_cards, :player1_cards, :player2_cards, :trump, :table
 
 		def initialize(starting_deck)
 			@deck_cards = starting_deck.to_a
 			@player1_cards = []
 			@player2_cards = []
 			@trump = @deck_cards.first.suit
+			@table = []
 			next_move
 		end
 
