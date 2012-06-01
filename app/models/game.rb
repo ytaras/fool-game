@@ -11,12 +11,11 @@ class Game
 	end
 
 	attr_accessor :current_move
-	attr_reader :deck_cards, :player1_cards, :player2_cards, :trump, :table
+	attr_reader :deck_cards, :player_cards, :trump, :table
 
 	def initialize(starting_deck)
 		@deck_cards = starting_deck.to_a
-		@player1_cards = []
-		@player2_cards = []
+		@player_cards = {:player1 => [], :player2 => []}
 		@trump = @deck_cards.first.suit
 		@table = []
 		next_move
@@ -40,6 +39,11 @@ class Game
 		end
 	end
 
+	def put(card)
+		cards = player_cards[current_move]
+		table.push(card => nil) if cards.delete(card)
+	end
+
 	def to_s
 		"""
 		Game
@@ -51,16 +55,27 @@ class Game
 		"""
 	end	
 
+	def player1_cards
+		player_cards[:player1]
+	end
+
+	def player2_cards
+		player_cards[:player2]
+	end
+
+	private
+
 	def draw_cards(player)
-		player_cards = send(player.to_s + "_cards")
-		cards_to_draw = 6 - player_cards.size
+		cards = player_cards[player]
+		cards_to_draw = 6 - cards.size
 		if(cards_to_draw > 0)
-			deck_cards.pop(cards_to_draw).each { |it| player_cards.push(it) }
+			deck_cards.pop(cards_to_draw).each { |it| cards.push(it) }
 		end
 	end
 
 	def smallest_trump(player)
-		player_cards = send(player.to_s + "_cards")
-		player_cards.select { |it| it.suit == @trump }.map { |it| it.card }.min_by { |it| CARDS.find_index(it) }
+		cards = player_cards[player]
+		cards.select { |it| it.suit == @trump }.map { |it| it.card }.min_by { |it| CARDS.find_index(it) }
 	end
+
 end

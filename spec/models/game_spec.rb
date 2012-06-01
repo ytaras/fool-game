@@ -34,6 +34,24 @@ describe Game do
 			@game.should have(6).player1_cards
 			@game.should have(6).player2_cards
 		end
+	end
 
+	describe "in game" do
+		describe "put" do
+			it "allow to put card on table" do
+				@game.stub(:current_move => :player1)
+				card = @game.player1_cards.first
+				@game.put(card)	
+				@game.player1_cards.should_not include(card)
+				@game.table.should include({card => nil})
+			end
+
+			it "does nothing on wrong card" do
+				@game.stub(:current_move => :player1)
+				card = @game.player2_cards.first
+				@game.put(card)		
+				@game.table.should be_empty
+			end
+		end
 	end
 end
