@@ -5,6 +5,7 @@ class Game
 	
 	SORTED_DECK = Array.new
 	SUITS.each { |suit| CARDS.each { |card| SORTED_DECK.push Card.new(suit, card) }}
+	SORTED_DECK.freeze
 	
 	def self.create_game(starting_deck = nil)
 		starting_deck = SORTED_DECK.shuffle unless starting_deck

@@ -54,7 +54,7 @@ describe Game do
 			end
 
 			it "dont allow to put card if not same card" do
-				@game = Game.new(Game::SORTED_DECK.clone)
+				@game = Game.new(Array.new(Game::SORTED_DECK))
 				first_card = @game.player2_cards.last
 				@game.put(first_card)
 				second_card = @game.player2_cards.last
@@ -77,7 +77,7 @@ describe Game do
 
 		describe "beat" do
 			before(:each) do
-				@game = Game.new(Game::SORTED_DECK.clone)
+				@game = Game.new(Array.new(Game::SORTED_DECK))
 			end
 
 			it "player2 should start" do
