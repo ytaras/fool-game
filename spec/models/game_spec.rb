@@ -102,6 +102,17 @@ describe Game do
 				@game.table.should be_empty
 				@game.player1_cards.should include(beating_card)
 			end
+
+			it "does nothing if card cant beat" do
+				@game.put(@game.player2_cards.first)
+				# Verify if we cant beat
+				card_on_table = @game.table.keys.first
+				beating_card = @game.player1_cards.last
+				beating_card.should_not be_beats(card_on_table)
+				@game.beat(card_on_table, beating_card)
+				@game.player1_cards.should include(beating_card)
+				@game.table[card_on_table].should == nil
+			end
 		end
 	end
 end

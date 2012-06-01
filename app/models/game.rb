@@ -55,7 +55,7 @@ class Game
 
 	def beat(to_beat, beating)
 		cards = player_cards[current_defense]
-		if(table.has_key?(to_beat) && cards.delete(beating))
+		if(table.has_key?(to_beat) && beating.beats?(to_beat) && cards.delete(beating))
 			table[to_beat] = beating
 		end
 	end
