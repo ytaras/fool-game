@@ -1,4 +1,5 @@
 class Game 
+	# TODO It's probably symbols?
 	SUITS = %w(Spade Heart Diamond Club)
 	CARDS = %w(6 7 8 9 10 Jack Queen King Ace)
 	
@@ -17,7 +18,7 @@ class Game
 		@deck_cards = starting_deck.to_a
 		@player_cards = {:player1 => [], :player2 => []}
 		@trump = @deck_cards.first.suit
-		@table = []
+		@table = {}
 		next_move
 	end
 
@@ -41,7 +42,21 @@ class Game
 
 	def put(card)
 		cards = player_cards[current_move]
-		table.push(card => nil) if cards.delete(card)
+		if(!table.empty?)
+			return unless available.include?(card.card)
+		end
+		table[card] = nil if cards.delete(card)
+	end
+
+	def available
+		table.keys.map { |e| e.card } | table.values.compact.map { |e| e.card }
+	end
+
+	def beat(to_beat, beating)
+		cards = player_cards[current_defense]
+		if(table.has_key?(to_beat) && cards.delete(beating))
+			table[to_beat] = beating
+		end
 	end
 
 	def to_s
@@ -76,6 +91,14 @@ class Game
 	def smallest_trump(player)
 		cards = player_cards[player]
 		cards.select { |it| it.suit == @trump }.map { |it| it.card }.min_by { |it| CARDS.find_index(it) }
+	end
+
+	def current_defense
+		if current_move == :player1
+			:player2
+		else
+			:player1
+		end
 	end
 
 end
