@@ -29,7 +29,7 @@ describe Game do
 			start_deck = Game::CARDS.map {|it| Card.new(:heart, it)}
 			@game = Game.create_game(start_deck)
 			@game.trump.should == :heart
-			@game.player2_cards.map { |it| it.card }.should include("6")
+			@game.player2_cards.map { |it| it.card }.should include(:"6")
 			@game.current_move.should == :player2
 		end
 
@@ -71,10 +71,10 @@ describe Game do
 
 		describe "table" do
 			it "allows only cards which are present" do
-				@game.table[Card.new("Heart", "Queen")] = nil
-				@game.table[Card.new("Heart", "9")] = Card.new("Club", "8")
-				@game.table[Card.new("Heart", "10")] = Card.new("Heart", "8")
-				@game.available.should =~ ["Queen", "9", "8", "10"]
+				@game.table[Card.new(:Heart, :Queen)] = nil
+				@game.table[Card.new(:Heart, :"9")] = Card.new(:Club, :"8")
+				@game.table[Card.new(:Heart, :"10")] = Card.new(:Heart, :"8")
+				@game.available.should =~ [:Queen, :"9", :"8", :"10"]
 			end
 		end
 
