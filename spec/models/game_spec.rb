@@ -114,5 +114,21 @@ describe Game do
 				@game.table[card_on_table].should == nil
 			end
 		end
+
+		describe "take" do
+			before(:each) do
+				@game = Game.new(Array.new(Game::SORTED_DECK))
+			end
+
+			it "should take all cards from table to defending player" do
+				@game.put(@game.player2_cards.last)
+				card_on_table = @game.table.keys.first
+				@game.take
+				@game.player1_cards.should include(card_on_table)
+				@game.current_move.should == :player2
+				@game.should have(6).player2_cards
+				@game.should have(7).player1_cards
+			end
+		end
 	end
 end

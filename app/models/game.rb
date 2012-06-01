@@ -49,6 +49,12 @@ class Game
 		table[card] = nil if cards.delete(card)
 	end
 
+	def take
+		cards = player_cards[current_defense]
+		(table.keys + table.values.compact).each { |e| cards.push(e) }
+		next_move	
+	end
+
 	def available
 		table.keys.map { |e| e.card } | table.values.compact.map { |e| e.card }
 	end
