@@ -1,17 +1,16 @@
 require 'spec_helper'
 
-describe GameEngineHelper do
-
+describe Game do
 	before(:each) do
-		@game = helper.create_game
+		@game = Game.create_game
 	end
 
 	describe "game start" do
 		it "deck contains all cards" do
 	  		@game.should have(36 - 6 - 6).deck_cards
 	  		all_cards = @game.deck_cards + @game.player1_cards + @game.player2_cards
-	  		all_cards.should =~ helper.sorted_deck
-	  		all_cards.should_not == helper.sorted_deck
+	  		all_cards.should =~ Game::SORTED_DECK
+	  		all_cards.should_not == Game::SORTED_DECK
 	  	end
 
 	  	it "knows the trump" do
@@ -23,8 +22,8 @@ describe GameEngineHelper do
 		end
 
 		it "gives first turn to a gamer with lowest trump" do
-			start_deck = GameEngineHelper::CARDS.map {|it| GameEngineHelper::Card.new(:heart, it)}
-			@game = helper.create_game(start_deck)
+			start_deck = Game::CARDS.map {|it| Card.new(:heart, it)}
+			@game = Game.create_game(start_deck)
 			@game.next_move
 			@game.trump.should == :heart
 			@game.player2_cards.map { |it| it.card }.should include("6")
