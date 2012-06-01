@@ -1,5 +1,6 @@
 class Game 
 	# TODO It's probably symbols?
+	# TODO Check for to_enum
 	SUITS = %w(Spade Heart Diamond Club)
 	CARDS = %w(6 7 8 9 10 Jack Queen King Ace)
 	
