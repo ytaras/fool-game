@@ -50,9 +50,11 @@ class Game
 		table.keys.map { |e| e.card } | table.values.compact.map { |e| e.card }
 	end
 
-	def beat(to_beat, beating)
+	def beat(beating)
 		cards = player_cards[current_defense]
-		if(table.has_key?(to_beat) && beating.beats?(to_beat) && cards.delete(beating))
+		to_beat = table.key(nil)
+		return unless to_beat
+		if(beating.beats?(to_beat) && cards.delete(beating))
 			table[to_beat] = beating
 		end
 	end
@@ -63,6 +65,7 @@ class Game
 			Deck #{deck_cards}
 			Player1 #{player1_cards}
 			Player2 #{player2_cards}
+			Table #{table}
 			Trump #{trump}
 			Current move #{current_move}
 		"""

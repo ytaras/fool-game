@@ -94,14 +94,14 @@ describe Game do
 				beating_card = @game.player1_cards.first
 				beating_card.should be_beats(card_on_table)
 				# Should be good now
-				@game.beat(card_on_table, beating_card)
+				@game.beat(beating_card)
 				@game.player1_cards.should_not include(beating_card)
 				@game.table[card_on_table].should == beating_card
 			end
 
 			it "does nothing on wrong params" do
 				beating_card = @game.player1_cards.last
-				@game.beat(@game.player1_cards.first, beating_card)
+				@game.beat(beating_card)
 				@game.table.should be_empty
 				@game.player1_cards.should include(beating_card)
 			end
@@ -112,7 +112,7 @@ describe Game do
 				card_on_table = @game.table.keys.first
 				beating_card = @game.player1_cards.last
 				beating_card.should_not be_beats(card_on_table)
-				@game.beat(card_on_table, beating_card)
+				@game.beat(beating_card)
 				@game.player1_cards.should include(beating_card)
 				@game.table[card_on_table].should == nil
 			end
@@ -137,7 +137,7 @@ describe Game do
 			it "puts all cards to discarded" do
 				@game.put(@game.player2_cards.last)
 				card_on_table = @game.table.keys.first
-				@game.beat(card_on_table, @game.player1_cards.first)
+				@game.beat(@game.player1_cards.first)
 				@game.turn
 				@game.should have(2).discarded
 				@game.table.should be_empty
