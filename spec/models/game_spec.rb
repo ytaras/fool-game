@@ -146,5 +146,22 @@ describe Game do
 				@game.should have(6).player2_cards
 			end
 		end
+
+		describe "end game" do
+			it "game winner should be nil at start" do
+				@game.winner.should == nil
+			end
+
+			it "game ends when no cards are for any player" do
+				@game = Game.new(Array.new(Game::SORTED_DECK.take(7)))
+				@game.should have(1).player2_cards
+
+				@game.put(@game.player2_cards.last)
+				@game.take
+
+				@game.winner.should == :player2
+			end
+
+		end
 	end
 end

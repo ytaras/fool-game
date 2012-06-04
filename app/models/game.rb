@@ -14,7 +14,7 @@ class Game
 	end
 
 	attr_accessor :current_move
-	attr_reader :deck_cards, :player_cards, :trump, :table, :discarded
+	attr_reader :deck_cards, :player_cards, :trump, :table, :discarded, :winner
 
 	def initialize(starting_deck)
 		@deck_cards = starting_deck.to_a
@@ -106,6 +106,17 @@ class Game
 	def next_move(turn = true)
 		draw_cards(:player1)
 		draw_cards(:player2)
+
+		if(player1_cards.empty?)
+			if(player2_cards.empty?)
+				@winner = :none
+			else
+				@winner = :player1
+			end
+		elsif player2_cards.empty?
+			@winner = :player2
+		end
+
 		if(@current_move.nil?)
 			p1_trump = smallest_trump(:player1)
 			p2_trump = smallest_trump(:player2)
