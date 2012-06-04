@@ -1,13 +1,12 @@
-class Game 
-	# TODO It's probably symbols?
-	# TODO Check for to_enum
+class Game
+	# TODO Refactor - separate out few classes, probably table and hand
 	SUITS = %w(Spade Heart Diamond Club).map { |e| e.to_sym }
 	CARDS = %w(6 7 8 9 10 Jack Queen King Ace).map { |e| e.to_sym }
-	
+
 	SORTED_DECK = Array.new
 	SUITS.each { |suit| CARDS.each { |card| SORTED_DECK.push Card.new(suit, card) }}
 	SORTED_DECK.freeze
-	
+
 	def self.create_game(starting_deck = nil)
 		starting_deck = SORTED_DECK.shuffle unless starting_deck
 		Game.new(starting_deck)
@@ -33,9 +32,7 @@ class Game
 
 	def put(card)
 		cards = player_cards[current_move]
-		if(!table.empty?)
-			return unless available.include?(card.card)
-		end
+    return unless table.empty? || available.include?(card.card)
 		table[card] = nil if cards.delete(card)
 	end
 
@@ -54,7 +51,7 @@ class Game
 		cards = player_cards[current_defense]
 		to_beat = table.key(nil)
 		return unless to_beat
-		if(beating.beats?(to_beat) && cards.delete(beating))
+		if beating.beats?(to_beat) && cards.delete(beating)
 			table[to_beat] = beating
 		end
 	end
@@ -69,7 +66,7 @@ class Game
 			Trump #{trump}
 			Current move #{current_move}
 		"""
-	end	
+	end
 
 	def player1_cards
 		player_cards[:player1]
@@ -88,14 +85,14 @@ class Game
 	def draw_cards(player)
 		cards = player_cards[player]
 		cards_to_draw = 6 - cards.size
-		if(cards_to_draw > 0)
+		if cards_to_draw > 0
 			deck_cards.pop(cards_to_draw).each { |it| cards.push(it) }
 		end
 	end
 
 	def smallest_trump(player)
 		cards = player_cards[player]
-		cards.select { |it| it.suit == @trump }.map { |it| it.card }.min_by { |it| CARDS.find_index(it) }
+		cards.select { |it| it.suit == @trump }.min_by { |it| it.card_number }
 	end
 
 	def current_defense
@@ -110,8 +107,8 @@ class Game
 		draw_cards(:player1)
 		draw_cards(:player2)
 
-		if(player1_cards.empty?)
-			if(player2_cards.empty?)
+		if player1_cards.empty?
+			if player2_cards.empty?
 				@winner = :none
 			else
 				@winner = :player1
@@ -120,14 +117,14 @@ class Game
 			@winner = :player2
 		end
 
-		if(@current_move.nil?)
+		if @current_move.nil?
 			p1_trump = smallest_trump(:player1)
 			p2_trump = smallest_trump(:player2)
-			if(p1_trump.nil?)
+			if p1_trump.nil?
 				@current_move = :player2
 			elsif p2_trump.nil?
 		 		@current_move = :player1
-		 	elsif p1_trump < p2_trump
+		 	elsif p1_trump.card_number < p2_trump.card_number
 		 		@current_move = :player1
 			else
 				@current_move = :player2
