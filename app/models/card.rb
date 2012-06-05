@@ -10,7 +10,7 @@ class Card
 	end
 
 	def ==(other)
-		@suit == other.suit && @card == other.card
+		!other.nil? && @suit == other.suit && @card == other.card
 	end
 
 	def beats?(other)
