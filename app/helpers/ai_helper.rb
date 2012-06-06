@@ -33,6 +33,7 @@ module AiHelper
         end
 
         if card_to_put.nil?
+          @game.pass
         else
           @game.put(card_to_put)
         end

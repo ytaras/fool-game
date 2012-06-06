@@ -145,7 +145,7 @@ describe Game do
 
         @game.put(@game.player2_cards.last)
         @game.beat(@game.player1_cards.last)
-        @game.turn
+        @game.pass
         @game.should have(2).discarded
         @game.table.should be_empty
         @game.current_move.should == :player1

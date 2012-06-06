@@ -24,7 +24,7 @@ class Game
     next_move
   end
 
-  def turn
+  def pass
     table_cards.each { |e| @discarded.push e }
     table.clear
     next_move
