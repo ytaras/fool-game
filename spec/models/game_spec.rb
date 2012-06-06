@@ -26,23 +26,10 @@ describe Game do
     end
 
     it "gives first turn to a gamer with lowest trump" do
-      start_deck = [
-          # Player1
-          Card.new(:Club, :"8"),
-          Card.new(:Heart, :"10"),
-          Card.new(:Diamond, :"9"),
-          Card.new(:Heart, :Ace),
-          Card.new(:Spade, :Ace),
-          Card.new(:Diamond, :Ace),
-          # Player2
-          Card.new(:Club, :"7"),
-          Card.new(:Heart, :"7"),
-          Card.new(:Diamond, :"8"),
-          Card.new(:Heart, :"9"),
-          Card.new(:Heart, :Queen),
-      ]
+      start_deck = Game::SORTED_DECK.take(12)
+      start_deck.push start_deck.shift
       @game = Game.create_game(start_deck)
-      @game.trump.should == :Heart
+      @game.trump.should == :Spade
       @game.current_move.should == :player2
     end
 
