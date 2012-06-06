@@ -5,15 +5,27 @@ module AiHelper
 
   class AiGame
 
-    delegate :current_move, :table, :trump, :beat, :to => :game
+    delegate :current_move, :table, :trump, :to => :game
 
     attr_reader :game
 
-    def initialize(game)
-      @game = game
+    def beat(card)
+      # TODO Find out how to do this with metaprogramming
+      @game.beat(card)
+      do_my_turn if my_move()
     end
 
-    def your_turn
+    def initialize(game)
+      @game = game
+      do_my_turn if my_move
+    end
+
+    private
+    def my_move
+      @game.current_move == :player2
+    end
+
+    def do_my_turn
       if current_move == :player2
         card_sort = lambda { |x, y|
           x.card_number <=> y.card_number

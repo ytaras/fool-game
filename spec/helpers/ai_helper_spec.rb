@@ -13,14 +13,11 @@ describe AiHelper do
   it "throws least not-trump card on a table if starts" do
     @game = helper.create_game(Array.new(Game::SORTED_DECK))
     @game.current_move.should == :player2
-    # TODO I don't know if i need this method really but it's for sake of testing
-    @game.your_turn
     @game.table.keys.should include(Card.new(:Heart, :"6"))
   end
 
   it "should throw same card if can" do
     def verify_and_beat(p2suit, p2card, p1suit, p1card)
-      @game.your_turn
       @game.table.keys.should include(Card.new(p2suit, p2card))
       @game.beat(Card.new(p1suit, p1card))
     end
@@ -47,7 +44,6 @@ describe AiHelper do
     verify_and_beat(:Diamond, :"8", :Diamond, :"9")
     verify_and_beat(:Heart, :"9", :Heart, :Ace)
     verify_and_beat(:Spade, :"7", :Spade, :Ace)
-    @game.your_turn
     @game.current_move.should == :player1
   end
 end
