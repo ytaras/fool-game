@@ -15,7 +15,7 @@ describe AiHelper do
     @game.current_move.should == :player2
     # TODO I don't know if i need this method really but it's for sake of testing
     @game.your_turn
-    @game.table.keys.should include(Card.new(:Club, :"6"))
+    @game.table.keys.should include(Card.new(:Heart, :"6"))
   end
 
   it "should throw same card if can" do
