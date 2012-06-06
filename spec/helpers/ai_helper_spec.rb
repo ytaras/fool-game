@@ -39,8 +39,7 @@ describe AiHelper do
                                    Card.new(:Diamond, :"8"),
                                    Card.new(:Heart, :"9"),
                                    Card.new(:Spade, :"7"),
-                               # TODO - Reverse in scope of constructor for encapsulation
-                               ].reverse)
+                               ])
     @game.trump.should == :Spade
     @game.current_move.should == :player2
     verify_and_beat(:Club, :"7", :Club, :"8")

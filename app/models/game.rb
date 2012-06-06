@@ -18,7 +18,7 @@ class Game
   def initialize(starting_deck)
     @deck_cards = starting_deck.to_a
     @player_cards = {:player1 => [], :player2 => []}
-    @trump = @deck_cards.first.suit
+    @trump = @deck_cards.last.suit
     @table = {}
     @discarded = []
     next_move
@@ -86,7 +86,7 @@ class Game
     cards = player_cards[player]
     cards_to_draw = 6 - cards.size
     if cards_to_draw > 0
-      deck_cards.pop(cards_to_draw).each { |it| cards.push(it) }
+      deck_cards.shift(cards_to_draw).each { |it| cards.push(it) }
     end
   end
 

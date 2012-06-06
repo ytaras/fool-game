@@ -14,7 +14,7 @@ describe Game do
     end
 
     it "knows the trump" do
-      @game.trump.should == @game.deck_cards.first.suit
+      @game.trump.should == @game.deck_cards.last.suit
     end
 
     it "table is empty" do
@@ -26,10 +26,23 @@ describe Game do
     end
 
     it "gives first turn to a gamer with lowest trump" do
-      start_deck = Game::CARDS.map { |it| Card.new(:heart, it) }
+      start_deck = [
+          # Player1
+          Card.new(:Club, :"8"),
+          Card.new(:Heart, :"10"),
+          Card.new(:Diamond, :"9"),
+          Card.new(:Heart, :Ace),
+          Card.new(:Spade, :Ace),
+          Card.new(:Diamond, :Ace),
+          # Player2
+          Card.new(:Club, :"7"),
+          Card.new(:Heart, :"7"),
+          Card.new(:Diamond, :"8"),
+          Card.new(:Heart, :"9"),
+          Card.new(:Heart, :Queen),
+      ]
       @game = Game.create_game(start_deck)
-      @game.trump.should == :heart
-      @game.player2_cards.map { |it| it.card }.should include(:"6")
+      @game.trump.should == :Heart
       @game.current_move.should == :player2
     end
 
@@ -88,15 +101,19 @@ describe Game do
       end
 
       it "player1 should be able to beat" do
+        start_deck = Array.new(Game::SORTED_DECK).take(12)
+        start_deck.push start_deck.shift
+        @game = Game.new(start_deck)
+
+        # Verifying starting conditions
+        @game.trump.should == :Spade
+        @game.player1_cards.first.should be_beats(@game.player2_cards.last)
+
         @game.put(@game.player2_cards.last)
-        # Verify if we can beat
-        card_on_table = @game.table.keys.first
-        beating_card = @game.player1_cards.first
-        beating_card.should be_beats(card_on_table)
-        # Should be good now
+        beating_card = @game.player1_cards.last
         @game.beat(beating_card)
         @game.player1_cards.should_not include(beating_card)
-        @game.table[card_on_table].should == beating_card
+        @game.table.values.should include(beating_card)
       end
 
       it "does nothing on wrong params" do
@@ -135,9 +152,12 @@ describe Game do
       end
 
       it "puts all cards to discarded" do
+        start_deck = Array.new(Game::SORTED_DECK).take(14).reverse
+        @game = Game.new(start_deck)
+        @game.player1_cards.last.should be_beats(@game.player2_cards.last)
+
         @game.put(@game.player2_cards.last)
-        card_on_table = @game.table.keys.first
-        @game.beat(@game.player1_cards.first)
+        @game.beat(@game.player1_cards.last)
         @game.turn
         @game.should have(2).discarded
         @game.table.should be_empty
@@ -153,7 +173,9 @@ describe Game do
       end
 
       it "game ends when no cards are for any player" do
-        @game = Game.new(Array.new(Game::SORTED_DECK.take(7)))
+        start_deck = Array.new(Game::SORTED_DECK.take(7))
+        start_deck.push start_deck.shift
+        @game = Game.new(start_deck)
         @game.should have(1).player2_cards
 
         @game.put(@game.player2_cards.last)
