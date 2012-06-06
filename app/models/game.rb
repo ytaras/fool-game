@@ -51,7 +51,7 @@ class Game
     cards = player_cards[current_defense]
     to_beat = table.key(nil)
     return unless to_beat
-    if beating.beats?(to_beat) && cards.delete(beating)
+    if beating.beats?(to_beat, trump) && cards.delete(beating)
       table[to_beat] = beating
     end
   end

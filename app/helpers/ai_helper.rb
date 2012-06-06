@@ -9,6 +9,11 @@ module AiHelper
 
     attr_reader :game
 
+    def put(card)
+      @game.put(card)
+      do_my_turn unless my_move
+    end
+
     def beat(card)
       # TODO Find out how to do this with metaprogramming
       @game.beat(card)
@@ -27,28 +32,52 @@ module AiHelper
 
     def do_my_turn
       if current_move == :player2
-        card_sort = lambda { |x, y|
+        do_attack()
+      else
+        do_defense()
+      end
+    end
+
+    def do_defense
+      card_to_beat = table.key(nil)
+      beating = @game.player2_cards.select { |x| x.beats?(card_to_beat, trump) }.sort { |x, y|
+        if (x.suit) == (y.suit)
           x.card_number <=> y.card_number
-        }
-
-        card_filter = lambda { |x|
-          game.available.include?(x.card)
-        }
-
-        if table.empty?
-          # I should start
-          card_to_put = non_trumps.sort(&card_sort).first
-          card_to_put = trumps.sort(&card_sort).first if card_to_put.nil?
+        elsif x.suit == trump
+          1
         else
-          card_to_put = non_trumps.select(&card_filter).sort(&card_sort).first
-          card_to_put = trumps.select(&card_filter).sort(&card_sort).first if card_to_put.nil?
+          -1
         end
+      }.first
+      if beating.nil?
+        game.take
+      else
+        beat(beating)
+      end
+    end
 
-        if card_to_put.nil?
-          @game.pass
-        else
-          @game.put(card_to_put)
-        end
+    def do_attack
+      card_sort = lambda { |x, y|
+        x.card_number <=> y.card_number
+      }
+
+      card_filter = lambda { |x|
+        game.available.include?(x.card)
+      }
+
+      if table.empty?
+        # I should start
+        card_to_put = non_trumps.sort(&card_sort).first
+        card_to_put = trumps.sort(&card_sort).first if card_to_put.nil?
+      else
+        card_to_put = non_trumps.select(&card_filter).sort(&card_sort).first
+        card_to_put = trumps.select(&card_filter).sort(&card_sort).first if card_to_put.nil?
+      end
+
+      if card_to_put.nil?
+        @game.pass
+      else
+        put(card_to_put)
       end
     end
 

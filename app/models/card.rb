@@ -15,7 +15,9 @@ class Card
     !other.nil? && @suit == other.suit && @card == other.card
   end
 
-  def beats?(other)
-    suit == other.suit && card_number > other.card_number
+  def beats?(other, trump = nil)
+    beats_same = suit == other.suit && card_number > other.card_number
+    return beats_same if trump.nil? || suit != trump
+    other.suit != trump || beats_same
   end
 end
