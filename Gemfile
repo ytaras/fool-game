@@ -27,7 +27,9 @@ group :test, :development do
   gem 'watchr'
 end
 
-gem 'spork'
+gem 'spork', :group => :development
+
+gem 'devise'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
