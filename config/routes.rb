@@ -1,4 +1,5 @@
 FoolGame::Application.routes.draw do
+  root :to => "Home#index"
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
