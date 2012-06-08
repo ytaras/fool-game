@@ -2,6 +2,8 @@ FoolGame::Application.routes.draw do
   devise_for :users
 
   root :to => "Game#index"
+
+  get 'game/create'
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

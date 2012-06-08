@@ -1,8 +1,10 @@
 class GameController < ApplicationController
+  before_filter :authenticate_user!, :except => :index
+
   def index
-    @object = "Sgrin"
-    respond_to do |format|
-      format.html
-    end
+  end
+
+  def create
+
   end
 end
