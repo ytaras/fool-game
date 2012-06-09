@@ -10,7 +10,7 @@ module AiHelper
     attr_reader :game
 
     def deck
-      !@game.deck_cards.empty?
+      @game.deck_cards.size
     end
 
     def put(card)

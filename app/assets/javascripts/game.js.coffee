@@ -18,13 +18,14 @@ createElement: (name, aClass, text) ->
 
 loadData: (element, game) ->
   element.find('#trump').append GameHelper.createCardDiv(game.trumpCard)
-  if game.deck
-    element.find('#deck').show()
-  else
-    element.find('#deck').hide()
+  GameHelper.visible('#deck', game.deck > 1)
+  GameHelper.visible('#trump', game.deck > 0)
   handElem = element.find('#hand')
   $.each game.cards, (i, card) ->
     handElem.append GameHelper.createCardDiv card
+
+visible: (element, value) ->
+  $(element)[if value then 'show' else 'hide']()
 }
 
 $(document).ready () ->

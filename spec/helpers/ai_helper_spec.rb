@@ -88,5 +88,9 @@ describe AiHelper do
     it "shows trump card" do
       @game.trump_card.should_not be_nil
     end
+
+    it "knows amount of cards in deck" do
+      @game.deck.should == @game.game.deck_cards.size
+    end
   end
 end
