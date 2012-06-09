@@ -1,8 +1,10 @@
 window.GameHelper = {
 createCardDiv: (cardDef) ->
-  cardDiv = GameHelper.createElement('div', 'card')
+  cardDiv = GameHelper.createElement('div', 'card ' + GameHelper.class_name(cardDef))
   cardDiv.dataset.card = cardDef.card
   cardDiv.dataset.suit = cardDef.suit
+  # TODO Use JQuery to create elems
+#  $(cardDiv).addClass()
   return cardDiv
 
 createElement: (name, aClass, text) ->
@@ -21,8 +23,8 @@ loadData: (element, game) ->
 
 visible: (element, value) ->
   $(element)[if value then 'show' else 'hide']()
-image_url: (card) ->
-  (card.suit + '-' + (if card.card == '10' then '10' else card.card[0]) + '-75.png').toLowerCase()
+class_name: (card) ->
+  ('cards-' + card.suit + 's' + (if card.card == '10' then '10' else card.card[0])).toLowerCase()
 }
 
 $(document).ready () ->

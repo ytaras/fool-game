@@ -1,6 +1,6 @@
-// Place all the styles related to the Game controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+@import "compass";
+@import "cards/*.png";
+@include all-cards-sprites;
 
 @mixin card {
   display: inline;
@@ -23,7 +23,7 @@
 
 #deck {
   @include card;
-  background: asset_data_url("cards/back-red-75-1.png");
+  @include cards-sprite(backblue-1);
 }
 
 #hand {
@@ -31,5 +31,5 @@
 }
 
 .between_players {
-  @include card_container
+  @include card_container;
 }

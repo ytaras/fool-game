@@ -1,22 +1,23 @@
 describe 'GameHelper', ->
   it "creates card div from card spec", ->
-    card = {"card": "6", "suit": "Hearts"}
+    card = {"card": "6", "suit": "Heart"}
     div = $(GameHelper.createCardDiv card)
     expect(div).toHaveClass 'card'
+    expect(div).toHaveClass 'cards-hearts6'
     expect(div).toHaveData('card', '6')
-    expect(div).toHaveData('suit', 'Hearts')
+    expect(div).toHaveData('suit', 'Heart')
 
   describe "load game", ->
     beforeEach ->
       jasmine.getFixtures().load('game.html')
       @game =
         trumpCard:
-          suit: 'Hearts'
+          suit: 'Heart'
           card: 'Ace'
         deck: 2
         cards: [
-          {suit: 'Hearts', card: '6'}
-          {suit: 'Spades', card: '7'}
+          {suit: 'Heart', card: '6'}
+          {suit: 'Spade', card: '7'}
         ]
       GameHelper.loadData($('#gamefield'), @game)
     it "creates trump as a card", ->
@@ -39,12 +40,11 @@ describe 'GameHelper', ->
       expect($('#deck')).not.toBeVisible()
 
   describe "card to image converter", ->
-    verifyPath = (suit, card, image) ->
-      #      TODO Convert to data-url or sprites
-      expect(GameHelper.image_url({'card': card, 'suit': suit})).toBe(image)
+    verifyClass = (suit, card, image) ->
+      expect(GameHelper.class_name({'card': card, 'suit': suit})).toBe(image)
     it "converts suit", ->
-      verifyPath('Hearts', '6', 'hearts-6-75.png')
-      verifyPath('Spades', 'King', 'spades-k-75.png')
-      verifyPath('Diamonds', 'Jack', 'diamonds-j-75.png')
-      verifyPath('Clubs', '10', 'clubs-10-75.png')
+      verifyClass('Heart', 'Queen', 'cards-heartsq')
+      verifyClass('Spade', 'King', 'cards-spadesk')
+      verifyClass('Diamond', 'Jack', 'cards-diamondsj')
+      verifyClass('Club', '10', 'cards-clubs10')
 
