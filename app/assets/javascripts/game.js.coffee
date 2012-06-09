@@ -21,6 +21,9 @@ loadData: (element, game) ->
     element.find('.deck').show()
   else
     element.find('.deck').hide()
+  handElem = element.find('#hand')
+  $.each game.cards, (i, card) ->
+    handElem.append GameHelper.createCardDiv card
 }
 
 
