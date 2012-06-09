@@ -24,6 +24,7 @@ gem 'jquery-rails'
 
 group :test, :development do
   gem 'rspec-rails'
+  gem 'jasmine-rails'
   gem 'watchr'
 end
 
