@@ -1,6 +1,6 @@
 object @game => :game
 attributes :table, :deck
-node :trump do
+node :trumpCard do
   partial("game/card", :object => @game.trump_card)
 end
 node :cards do

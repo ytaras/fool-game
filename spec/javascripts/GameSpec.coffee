@@ -20,10 +20,10 @@ describe 'GameHelper', ->
           {suit: 'Hearts', card: '6'}
           {suit: 'Spades', card: '7'}
         ]
-      GameHelper.loadData($('#fixture'), @game)
+      GameHelper.loadData($('#gamefield'), @game)
     it "creates trump as a card", ->
       expect($('#trump')).toContain('div.card')
     it "shows deck", ->
-      expect($('.deck')).toBeVisible()
+      expect($('#deck')).toBeVisible()
     it "shows hand", ->
       expect($('#hand div.card').length).toBe(2)
