@@ -67,7 +67,7 @@ class Game
 			Player1 #{player1_cards}
 			Player2 #{player2_cards}
 			Table #{table}
-			Trump #{trump}
+			Trump #{trump_card}
 			Current move #{current_move}
     " ""
   end

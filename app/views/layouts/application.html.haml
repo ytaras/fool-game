@@ -7,6 +7,9 @@
     = include_gon
     = csrf_meta_tags
   %body
+    %ul.hmenu
+      = render 'devise/menu/registration_items'
+      = render 'devise/menu/login_items'
     %p.notice= notice
     %p.alert= alert
     = yield
