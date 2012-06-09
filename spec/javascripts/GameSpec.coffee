@@ -5,7 +5,7 @@ describe 'GameHelper', ->
     expect(div).toHaveClass 'card'
     expect(div).toHaveData('card', '6')
     expect(div).toHaveData('suit', 'Hearts')
-    expect(div).toContain('span.card')
+    expect(div).toContain('span.card_value')
     expect(div).toContain('span.suit')
 
   describe "load game", ->

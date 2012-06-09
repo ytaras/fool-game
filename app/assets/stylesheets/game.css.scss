@@ -1,3 +1,23 @@
 // Place all the styles related to the Game controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+$card_bg: #ffffff;
+$card_back_bg: green;
+@mixin card {
+  display: inline;
+  float: left;
+  height: 200px;
+  width: 150px;
+  text-align: center;
+}
+
+.card {
+  @include card;
+  background-color: $card_bg;
+}
+
+#deck {
+  @include card;
+  background-color: $card_back_bg;
+}

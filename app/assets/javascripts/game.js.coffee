@@ -3,7 +3,7 @@ createCardDiv: (cardDef) ->
   cardDiv = GameHelper.createElement('div', 'card')
   cardDiv.dataset.card = cardDef.card
   cardDiv.dataset.suit = cardDef.suit
-  cardSpan = GameHelper.createElement('span', 'card', cardDef.card)
+  cardSpan = GameHelper.createElement('span', 'card_value', cardDef.card)
   suitSpan = GameHelper.createElement('span', 'suit', cardDef.suit)
   cardDiv.appendChild(cardSpan)
   cardDiv.innerHTML += ' of '
