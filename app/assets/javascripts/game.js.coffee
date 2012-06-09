@@ -17,6 +17,10 @@ createElement: (name, aClass, text) ->
 
 loadData: (element, game) ->
   element.find('#trump').append GameHelper.createCardDiv(game.trumpCard)
+  if game.deck
+    element.find('.deck').show()
+  else
+    element.find('.deck').hide()
 }
 
 

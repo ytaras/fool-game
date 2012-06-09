@@ -10,14 +10,14 @@ describe 'GameHelper', ->
 
   describe "load game", ->
     beforeEach ->
-      jasmine.getFixtures().set('<div id="fixture"><div id="trump"></div></div>')
-      @game = {
-      trumpCard:
-        {
-        suit: 'Hearts',
-        card: 'Ace'
-        }
-      }
+      jasmine.getFixtures().set('<div id="fixture"><div class="deck" style="display: none;">Deck</div><div id="trump"></div></div>')
+      @game =
+        trumpCard:
+          suit: 'Hearts'
+          card: 'Ace'
+        deck: true
       GameHelper.loadData($('#fixture'), @game)
     it "creates trump as a card", ->
       expect($('#trump')).toContain('div.card')
+    it "shows deck", ->
+      expect($('.deck')).toBeVisible()
