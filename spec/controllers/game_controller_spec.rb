@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe GameController do
+
+  def login
+    sign_in FactoryGirl.create(:user)
+  end
+
   shared_examples "protected" do |method|
     it "redirects to login" do
       get method
@@ -9,5 +14,11 @@ describe GameController do
   end
   describe :create do
     include_examples "protected", :create
+
+    it "redirects to play" do
+      login
+      get :create
+      assigns[:game].should_not be_nil
+    end
   end
 end

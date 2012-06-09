@@ -31,12 +31,14 @@ gem 'spork', :group => :development
 
 gem 'devise'
 
-gem 'haml' # you probably have already done this
+gem 'haml'
 group :development do
   gem 'haml-rails' # you'll want this so all subsequent views are generated using Haml
   gem 'hpricot'
   gem 'ruby_parser'
 end
+
+gem 'factory_girl_rails', :group => :test
 
 
 # To use ActiveModel has_secure_password
