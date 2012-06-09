@@ -10,6 +10,14 @@ $card_back_bg: green;
   height: 200px;
   width: 150px;
   text-align: center;
+  border: black solid thin;
+  margin: 2px;
+}
+
+@mixin card_container {
+  display: inline-block;
+  width: 100%;
+  margin: 10px;
 }
 
 .card {
@@ -20,4 +28,12 @@ $card_back_bg: green;
 #deck {
   @include card;
   background-color: $card_back_bg;
+}
+
+#hand {
+  @include card_container
+}
+
+.between_players {
+  @include card_container
 }
