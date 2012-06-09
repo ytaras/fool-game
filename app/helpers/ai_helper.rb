@@ -5,9 +5,13 @@ module AiHelper
 
   class AiGame
 
-    delegate :current_move, :table, :trump, :trump_card, :to => :game
+    delegate :current_move, :table, :trump, :trump_card, :player1_cards, :to => :game
 
     attr_reader :game
+
+    def deck
+      !@game.deck_cards.empty?
+    end
 
     def put(card)
       @game.put(card)
