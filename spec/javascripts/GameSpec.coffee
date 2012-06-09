@@ -10,7 +10,7 @@ describe 'GameHelper', ->
 
   describe "load game", ->
     beforeEach ->
-      jasmine.getFixtures().set('<div id="fixture"><div class="deck" style="display: none;">Deck</div><div id="trump"></div></div>')
+      jasmine.getFixtures().load('game.html`')
       @game =
         trumpCard:
           suit: 'Hearts'
