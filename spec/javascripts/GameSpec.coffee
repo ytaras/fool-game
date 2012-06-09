@@ -5,8 +5,6 @@ describe 'GameHelper', ->
     expect(div).toHaveClass 'card'
     expect(div).toHaveData('card', '6')
     expect(div).toHaveData('suit', 'Hearts')
-    expect(div).toContain('span.card_value')
-    expect(div).toContain('span.suit')
 
   describe "load game", ->
     beforeEach ->
@@ -39,3 +37,14 @@ describe 'GameHelper', ->
       GameHelper.loadData($('#gamefield'), @game)
       expect($('#trump')).not.toBeVisible()
       expect($('#deck')).not.toBeVisible()
+
+  describe "card to image converter", ->
+    verifyPath = (suit, card, image) ->
+      #      TODO Convert to data-url or sprites
+      expect(GameHelper.image_url({'card': card, 'suit': suit})).toBe(image)
+    it "converts suit", ->
+      verifyPath('Hearts', '6', 'hearts-6-75.png')
+      verifyPath('Spades', 'King', 'spades-k-75.png')
+      verifyPath('Diamonds', 'Jack', 'diamonds-j-75.png')
+      verifyPath('Clubs', '10', 'clubs-10-75.png')
+

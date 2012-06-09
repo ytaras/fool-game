@@ -3,11 +3,6 @@ createCardDiv: (cardDef) ->
   cardDiv = GameHelper.createElement('div', 'card')
   cardDiv.dataset.card = cardDef.card
   cardDiv.dataset.suit = cardDef.suit
-  cardSpan = GameHelper.createElement('span', 'card_value', cardDef.card)
-  suitSpan = GameHelper.createElement('span', 'suit', cardDef.suit)
-  cardDiv.appendChild(cardSpan)
-  cardDiv.innerHTML += ' of '
-  cardDiv.appendChild(suitSpan)
   return cardDiv
 
 createElement: (name, aClass, text) ->
@@ -26,6 +21,8 @@ loadData: (element, game) ->
 
 visible: (element, value) ->
   $(element)[if value then 'show' else 'hide']()
+image_url: (card) ->
+  (card.suit + '-' + (if card.card == '10' then '10' else card.card[0]) + '-75.png').toLowerCase()
 }
 
 $(document).ready () ->

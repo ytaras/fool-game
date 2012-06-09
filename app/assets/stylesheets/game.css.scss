@@ -2,15 +2,12 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-$card_bg: #ffffff;
-$card_back_bg: green;
 @mixin card {
   display: inline;
   float: left;
-  height: 200px;
-  width: 150px;
+  height: 107px;
+  width: 75px;
   text-align: center;
-  border: black solid thin;
   margin: 2px;
 }
 
@@ -22,12 +19,11 @@ $card_back_bg: green;
 
 .card {
   @include card;
-  background-color: $card_bg;
 }
 
 #deck {
   @include card;
-  background-color: $card_back_bg;
+  background: asset_data_url("cards/back-red-75-1.png");
 }
 
 #hand {
