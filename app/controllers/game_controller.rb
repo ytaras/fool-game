@@ -5,7 +5,12 @@ class GameController < ApplicationController
   def index
   end
 
-  def create
-    @game = create_game
+  def play
+    @game = create_or_load_game
+  end
+
+  private
+  def create_or_load_game
+    session[:game] ||= create_game
   end
 end

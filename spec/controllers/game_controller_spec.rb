@@ -12,13 +12,16 @@ describe GameController do
       response.should redirect_to new_user_session_path
     end
   end
-  describe :create do
-    include_examples "protected", :create
+  describe :play do
+    include_examples "protected", :play
 
-    it "redirects to play" do
+    it "creates game if not exists" do
       login
-      get :create
-      assigns[:game].should_not be_nil
+      get :play
+      old_game = assigns[:game]
+      old_game.should_not be_nil
+      get :play
+      assigns[:game].should === old_game
     end
   end
 end
