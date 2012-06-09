@@ -83,4 +83,10 @@ describe AiHelper do
     verify_and_beat(:Spade, :"7", :Spade, :Ace)
     @game.current_move.should == :player1
   end
+
+  describe AiHelper::AiGame do
+    it "shows trump card" do
+      @game.trump_card.should_not be_nil
+    end
+  end
 end

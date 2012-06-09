@@ -7,6 +7,7 @@ class GameController < ApplicationController
 
   def play
     @game = create_or_load_game
+    gon.rabl
   end
 
   private

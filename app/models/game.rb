@@ -13,15 +13,19 @@ class Game
   end
 
   attr_accessor :current_move
-  attr_reader :deck_cards, :player_cards, :trump, :table, :discarded, :winner
+  attr_reader :deck_cards, :player_cards, :trump_card, :table, :discarded, :winner
 
   def initialize(starting_deck)
     @deck_cards = starting_deck.to_a
     @player_cards = {:player1 => [], :player2 => []}
-    @trump = @deck_cards.last.suit
+    @trump_card = @deck_cards.last
     @table = {}
     @discarded = []
     next_move
+  end
+
+  def trump
+    @trump_card.suit
   end
 
   def pass
@@ -92,7 +96,7 @@ class Game
 
   def smallest_trump(player)
     cards = player_cards[player]
-    cards.select { |it| it.suit == @trump }.min_by { |it| it.card_number }
+    cards.select { |it| it.suit == trump }.min_by { |it| it.card_number }
   end
 
   def current_defense

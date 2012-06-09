@@ -5,7 +5,7 @@ module AiHelper
 
   class AiGame
 
-    delegate :current_move, :table, :trump, :to => :game
+    delegate :current_move, :table, :trump, :trump_card, :to => :game
 
     attr_reader :game
 
