@@ -14,6 +14,9 @@ createElement: (name, aClass, text) ->
   elem.className = aClass
   elem.text = text if text?
   return elem
+
+loadData: (element, game) ->
+  element.find('#trump').append GameHelper.createCardDiv(game.trumpCard)
 }
 
 
