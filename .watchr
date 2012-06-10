@@ -126,7 +126,7 @@ def parse_result_jasmine(result)
       :tests => tests,
       :pending => 0,
       :failures => failures,
-      :success => summary.end_with?("PASS"),
+      :success => !summary.nil? && summary.end_with?("PASS"),
       :duration => duration
   }
 end
