@@ -1,14 +1,18 @@
 require 'rubygems'
 
 # If your spec runner is at a different location: customize it here..
-RUNNER = "bundle exec rspec" unless defined?(RUNNER)
+RSPEC_RUNNER = "bundle exec rspec" unless defined?(RSPEC_RUNNER)
+JASMINE_RUNNER = "bundle exec jasmine-headless-webkit --color" unless defined?(JASMINE_RUNNER)
 
 
 # ---------
 # Signals
 # ---------
 
-Signal.trap('QUIT') { run_all_specs(File.join(Dir.pwd, 'spec')) } # Ctrl-\
+Signal.trap('QUIT') {
+  run_all_specs(File.join(Dir.pwd, 'spec'))
+  run_all_jasmine
+} # Ctrl-\
 Signal.trap('INT') { abort("\nBye.\n") } # Ctrl-C
 
 # ---------
@@ -17,7 +21,7 @@ Signal.trap('INT') { abort("\nBye.\n") } # Ctrl-C
 
 watch("spec/.*/*_spec.rb") do |md|
   run "Runnning: #{md[0]}" do
-    `#{RUNNER} #{md[0]}`
+    `#{RSPEC_RUNNER} #{md[0]}`
   end
 end
 
@@ -25,27 +29,44 @@ watch("app/(.*/.*).rb") do |match|
   spec = %{spec/#{match[1]}_spec.rb}
   if File.exist?(spec)
     run "Running: #{spec}" do
-      `#{RUNNER} #{spec}`
+      `#{RSPEC_RUNNER} #{spec}`
     end
   end
 end
 
+watch("app/(.*/.*).coffee") do |match|
+  run_all_jasmine
+end
+
+watch("spec/(.*/.*).coffee") do |match|
+  run_jasmine match[0]
+end
 
 # ---------
 # Helpers
 # ---------
 
+def run_jasmine(target)
+  run "Running all in: #{target}", "jasmine" do
+    `#{JASMINE_RUNNER} #{target}`
+  end
+end
+
+def run_all_jasmine
+  run_jasmine("spec/javascript")
+end
+
 def run_all_specs(target)
   run "Running all in: #{target}" do
-    `#{RUNNER} #{target}`
+    `#{RSPEC_RUNNER} #{target}`
   end
 end
 
 
-def run(description, &block)
+def run(description, runner = 'rspec', &block)
   puts "#{description}"
 
-  result = parse_result(block.call)
+  result = parse_result(block.call, runner)
 
   if result[:tests] =~ /\d/
     if $?.success? && result[:success]
@@ -67,7 +88,7 @@ def run(description, &block)
 end
 
 def pluralize(count, singular, plural)
-  return "" if count.nil? || count.empty?
+  return "" if count.nil?
   count == "1" ? "#{count} #{singular}" : "#{count} #{plural}"
 end
 
@@ -79,8 +100,13 @@ def growl(title, message, image_path = nil)
   system notify_send
 end
 
-def parse_result(result)
+def parse_result(result, runner)
   puts result
+  send "parse_result_#{runner}", result
+
+end
+
+def parse_result_rspec(result)
   duration = result.scan(/Finished in (\d.\d+) seconds/).flatten.first
   tests, failures, pending = result.scan(/(\d+) examples?, (\d+) failures?(?:, (\d+) pending?)?/).flatten
   {
@@ -88,6 +114,17 @@ def parse_result(result)
       :pending => pending,
       :failures => failures,
       :success => failures == "0",
+      :duration => duration
+  }
+end
+
+def parse_result_jasmine(result)
+  summary, tests, failures, duration = result.scan(/(\w+): (\d+) tests?, (\d+) failures?, (\d+.\d+) secs./).flatten
+  {
+      :tests => tests,
+      :pending => 0,
+      :failures => failures,
+      :success => summary.end_with?("PASS"),
       :duration => duration
   }
 end
