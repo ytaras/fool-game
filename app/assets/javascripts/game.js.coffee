@@ -3,8 +3,6 @@ createCardDiv: (cardDef, style = "") ->
   cardDiv = GameHelper.createElement('div', 'card ' + GameHelper.class_name(cardDef) + " " + style)
   cardDiv.dataset.card = cardDef.card
   cardDiv.dataset.suit = cardDef.suit
-  # TODO Use JQuery to create elems
-  #  $(cardDiv).addClass()
   return cardDiv
 
 createElement: (name, aClass, text) ->
