@@ -48,13 +48,13 @@ describe 'GameHelper', ->
       expect($('#trump')).not.toBeVisible()
       expect($('#deck')).not.toBeVisible()
     it "shows table cards", ->
-      expect($("#table .cardsStack").length).toBe(2)
-      firstStack = $("#table .cardsStack:first")
-      expect(firstStack).toContain(".attackCard.card.cards-spades8")
-      expect(firstStack).toContain(".defenseCard.card.cards-spades9")
-      secondStack = $("#table .cardsStack:gt(0)")
-      expect(secondStack).toContain(".attackCard.card.cards-hearts9")
-      expect(secondStack).not.toContain(".defenseCard")
+      expect($("#table .cards-stack").length).toBe(2)
+      firstStack = $("#table .cards-stack:first")
+      expect(firstStack).toContain(".attack-card.card.cards-spades8")
+      expect(firstStack).toContain(".defense-card.card.cards-spades9")
+      secondStack = $("#table .cards-stack:gt(0)")
+      expect(secondStack).toContain(".attack-card.card.cards-hearts9")
+      expect(secondStack).not.toContain(".defense-card")
 
 describe "card to image converter", ->
   verifyClass = (suit, card, image) ->

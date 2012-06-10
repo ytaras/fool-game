@@ -1,20 +1,37 @@
 @import "compass";
 @import "cards/*.png";
-@include all-cards-sprites;
+
+@include
+all-cards-sprites
+
+;
+
+$card_width: 75px;
+$card_margin: 2px;
+$card_height: 108px;
+$card_overflow: 10px;
+$border_padding: 10px;
 
 @mixin card {
   display: inline;
   float: left;
-  height: 107px;
-  width: 75px;
+  height: $card_height;
+  width: $card_width;
   text-align: center;
-  margin: 2px;
+  margin: $card_margin;
 }
 
 @mixin card_container {
   display: inline-block;
   width: 100%;
   margin: 10px;
+}
+
+@mixin bordered_area {
+  border: green dashed 1px;
+  padding: $border_padding;
+  margin: 5px;
+
 }
 
 .card {
@@ -30,6 +47,37 @@
   @include card_container
 }
 
-.between_players {
-  @include card_container;
+.deck_container {
+  @include bordered_area;
+  display: block;
+  width: $card_width * 2 + $card_margin * 4;
+  height: $card_height + $card_margin * 2;
+}
+
+#table {
+  @include bordered_area;
+  display: block;
+  width: $card_width * 6 + $card_margin * 12;
+  height: $card_height + $card_margin * 2 + $border_padding * 2;
+}
+
+.cards-stack {
+  display: inline-block;
+  position: relative;
+  width: $card_width + 2 * $card_margin + $card_overflow;
+}
+
+.attack-card, .defense-card {
+  z-index: 1;
+  position: absolute;
+}
+
+.attack-card {
+  top: 0;
+  left: 0;
+}
+
+.attack-card {
+  top: 0;
+  left: $card_overflow;
 }
