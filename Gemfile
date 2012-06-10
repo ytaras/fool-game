@@ -27,6 +27,7 @@ group :test, :development do
   gem 'rspec-rails'
   gem 'jasmine-rails'
   gem 'watchr'
+  gem 'gir_ffi'
 end
 
 gem 'spork', :group => :development

@@ -1,10 +1,14 @@
 require 'rubygems'
+# TODO Use libnotify
+require 'gir_ffi'
 
 # If your spec runner is at a different location: customize it here..
 RSPEC_RUNNER = "bundle exec rspec" unless defined?(RSPEC_RUNNER)
 JASMINE_RUNNER = "bundle exec jasmine-headless-webkit --color" unless defined?(JASMINE_RUNNER)
 
-
+GirFFI.setup :Notify
+Notify.init("Watchr")
+#growl("Watchr started", "wachr started", "dialog-information")
 # ---------
 # Signals
 # ---------
@@ -71,17 +75,17 @@ def run(description, runner = 'rspec', &block)
   if result[:tests] =~ /\d/
     if $?.success? && result[:success]
       title = "Specs Passed!"
-      img = "~/.watchr/success.png"
+      dialog_class = "dialog-information"
     else
       title = "Specs Failed!"
-      img = "~/.watchr/failed.png"
+      dialog_class = "dialog-error"
     end
 
     specs_count = pluralize(result[:tests], "example", "examples")
     failed_count = pluralize(result[:failures], "failure", "failures")
     pending_count = pluralize(result[:pending], "pending", "pending")
 
-    growl(title, "#{specs_count}, #{failed_count}, #{pending_count}", img)
+    growl(title, "#{specs_count}, #{failed_count}, #{pending_count}", dialog_class)
   else
     growl("Running Specs Failed!", "Runner returned an error..")
   end
@@ -92,12 +96,10 @@ def pluralize(count, singular, plural)
   count == "1" ? "#{count} #{singular}" : "#{count} #{plural}"
 end
 
-def growl(title, message, image_path = nil)
-  image_path = File.expand_path(image_path) if image_path
+def growl(title, message, dialog_class = nil)
 
-  notify_send = "notify-send  '#{title}' '#{message}' "
-  notify_send << "-i '#{image_path}' " if image_path && File.exists?(image_path)
-  system notify_send
+  notification = Notify::Notification.new(title, message, dialog_class)
+  notification.show
 end
 
 def parse_result(result, runner)
