@@ -43,7 +43,7 @@ module AiHelper
     end
 
     def do_defense
-      card_to_beat = table.key(nil)
+      card_to_beat = table.last[0]
       beating = @game.player2_cards.select { |x| x.beats?(card_to_beat, trump) }.sort { |x, y|
         if (x.suit) == (y.suit)
           x.card_number <=> y.card_number

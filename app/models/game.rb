@@ -19,7 +19,7 @@ class Game
     @deck_cards = starting_deck.to_a
     @player_cards = {:player1 => [], :player2 => []}
     @trump_card = @deck_cards.last
-    @table = {}
+    @table = []
     @discarded = []
     next_move
   end
@@ -37,7 +37,7 @@ class Game
   def put(card)
     cards = player_cards[current_move]
     return unless table.empty? || available.include?(card.card)
-    table[card] = nil if cards.delete(card)
+    table << [card] if cards.delete(card)
   end
 
   def take
@@ -48,15 +48,15 @@ class Game
   end
 
   def available
-    table.keys.map { |e| e.card } | table.values.compact.map { |e| e.card }
+    table.flatten.map { |e| e.card }.uniq
   end
 
   def beat(beating)
     cards = player_cards[current_defense]
-    to_beat = table.key(nil)
-    return unless to_beat
+    return if table.empty? || table.last.size > 1
+    to_beat = table.last[0]
     if beating.beats?(to_beat, trump) && cards.delete(beating)
-      table[to_beat] = beating
+      table.last << beating
     end
   end
 
@@ -83,7 +83,7 @@ class Game
   private
 
   def table_cards
-    table.keys + table.values.compact
+    table.flatten
   end
 
   def draw_cards(player)

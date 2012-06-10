@@ -13,7 +13,7 @@ describe AiHelper do
   it "throws least not-trump card on a table if starts" do
     @game = helper.create_game(Array.new(Game::SORTED_DECK))
     @game.current_move.should == :player2
-    @game.table.keys.should include(Card.new(:Heart, :"6"))
+    @game.table.should include([Card.new(:Heart, :"6")])
   end
 
   it "should beat with least available card" do
@@ -22,7 +22,7 @@ describe AiHelper do
       beat = Card.new(p2suit, p2card)
       beat.should be_beats(put, @game.trump)
       @game.put(put)
-      @game.table.values.should include(beat)
+      @game.table.map { |x| x[1] }.should include(beat)
     end
 
     start_deck = [
@@ -54,7 +54,7 @@ describe AiHelper do
 
   it "should throw same card if can" do
     def verify_and_beat(p2suit, p2card, p1suit, p1card)
-      @game.table.keys.should include(Card.new(p2suit, p2card))
+      @game.table.map { |x| x[0] }.should include(Card.new(p2suit, p2card))
       @game.beat(Card.new(p1suit, p1card))
     end
 
