@@ -19,6 +19,7 @@ describe 'GameHelper', ->
           {suit: 'Heart', card: '6'}
           {suit: 'Spade', card: '7'}
         ]
+        opponent: 3
         table: [
           [
             {suit: 'Spade', card: '8'},
@@ -55,6 +56,8 @@ describe 'GameHelper', ->
       secondStack = $("#table .cards-stack:gt(0)")
       expect(secondStack).toContain(".attack-card.card.cards-hearts9")
       expect(secondStack).not.toContain(".defense-card")
+    it "shows opponent cards", ->
+      expect($("#opponent_cards .card").length).toBe(3)
 
 describe "card to image converter", ->
   verifyClass = (suit, card, image) ->

@@ -13,6 +13,10 @@ module AiHelper
       @game.deck_cards.size
     end
 
+    def opponent
+      @game.player1_cards.size
+    end
+
     def put(card)
       @game.put(card)
       do_my_turn unless my_move

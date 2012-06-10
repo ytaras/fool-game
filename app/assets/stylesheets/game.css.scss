@@ -43,7 +43,7 @@ $border_padding: 10px;
   @include cards-sprite(backblue-1);
 }
 
-#hand {
+#hand, #opponent_cards {
   @include card_container
 }
 
@@ -65,6 +65,8 @@ $border_padding: 10px;
   display: inline-block;
   position: relative;
   width: $card_width + 2 * $card_margin + $card_overflow;
+  margin: 0px;
+  padding: 0px;
 }
 
 .attack-card, .defense-card {

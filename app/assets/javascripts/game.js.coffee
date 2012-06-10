@@ -21,10 +21,13 @@ loadData: (element, game) ->
   tableElem = element.find('#table')
   $.each game.table, (i, cards) ->
     stack = GameHelper.createElement("div", "cards-stack")
-    #    console.log GameHelper.createCardDiv(cards[0])
     $(stack).append GameHelper.createCardDiv(cards[0], "attack-card")
     $(stack).append GameHelper.createCardDiv(cards[1], "defense-card") if cards.length > 1
     tableElem.append stack
+  opponentElem = element.find('#opponent_cards')
+  for n in [1..game.opponent]
+    opponentElem.append GameHelper.createElement("div", "card cards-backblue-1")
+
 
 visible: (element, value) ->
   $(element)[if value then 'show' else 'hide']()

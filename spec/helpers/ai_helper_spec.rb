@@ -92,5 +92,9 @@ describe AiHelper do
     it "knows amount of cards in deck" do
       @game.deck.should == @game.game.deck_cards.size
     end
+
+    it "knows amount of cards in opponent hand" do
+      @game.opponent.should == @game.game.player1_cards.size
+    end
   end
 end
