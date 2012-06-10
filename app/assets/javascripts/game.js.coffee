@@ -1,10 +1,10 @@
 window.GameHelper = {
-createCardDiv: (cardDef) ->
-  cardDiv = GameHelper.createElement('div', 'card ' + GameHelper.class_name(cardDef))
+createCardDiv: (cardDef, style = "") ->
+  cardDiv = GameHelper.createElement('div', 'card ' + GameHelper.class_name(cardDef) + " " + style)
   cardDiv.dataset.card = cardDef.card
   cardDiv.dataset.suit = cardDef.suit
   # TODO Use JQuery to create elems
-#  $(cardDiv).addClass()
+  #  $(cardDiv).addClass()
   return cardDiv
 
 createElement: (name, aClass, text) ->
@@ -20,6 +20,13 @@ loadData: (element, game) ->
   handElem = element.find('#hand')
   $.each game.cards, (i, card) ->
     handElem.append GameHelper.createCardDiv card
+  tableElem = element.find('#table')
+  $.each game.table, (i, cards) ->
+    stack = GameHelper.createElement("div", "cardsStack")
+    #    console.log GameHelper.createCardDiv(cards[0])
+    $(stack).append GameHelper.createCardDiv(cards[0], "attackCard")
+    $(stack).append GameHelper.createCardDiv(cards[1], "defenseCard") if cards.length > 1
+    tableElem.append stack
 
 visible: (element, value) ->
   $(element)[if value then 'show' else 'hide']()
