@@ -72,8 +72,8 @@ def run(description, runner = 'rspec', &block)
 
   result = parse_result(block.call, runner)
 
-  if result[:tests] =~ /\d/
-    if $?.success? && result[:success]
+  if result[:tests] =~ /\d+/
+    if result[:success]
       title = "Specs Passed!"
       dialog_class = "dialog-information"
     else
