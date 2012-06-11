@@ -10,6 +10,12 @@ class GameController < ApplicationController
     gon.rabl
   end
 
+  def move
+    respond_to do |format|
+      format.json {}.to_json
+    end
+  end
+
   private
   def create_or_load_game
     session[:game] ||= create_game

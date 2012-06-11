@@ -28,6 +28,21 @@ loadData: (element, game) ->
   for n in [1..game.opponent]
     opponentElem.append GameHelper.createElement("div", "card cards-backblue-1")
 
+card_click: (card) ->
+  console.log card
+  if card instanceof HTMLElement
+    card = {"card": card.dataset.card, "suit": card.dataset.suit}
+  # TODO Error handling
+  $.ajax
+    "type": "POST"
+    "url": "/game/move"
+    "data":
+      "beat": card
+    success: (result) ->
+      console.log "Callback"
+    error: (result, status, errorThrown) ->
+      console.log result
+
 
 visible: (element, value) ->
   $(element)[if value then 'show' else 'hide']()
@@ -37,3 +52,4 @@ class_name: (card) ->
 
 $(document).ready () ->
   GameHelper.loadData($('#gamefield'), window.gon.game) if window.gon?
+  $('#hand .card').click((event) -> GameHelper.card_click event.target)
