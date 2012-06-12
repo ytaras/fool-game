@@ -1,6 +1,6 @@
 class GameController < ApplicationController
   include AiHelper
-  before_filter :authenticate_user!, :except => :index
+  before_filter :authenticate_user!, :create_or_load_game, :except => :index
 
   def index
   end
@@ -12,7 +12,7 @@ class GameController < ApplicationController
 
   def move
     respond_to do |format|
-      format.json {}.to_json
+      format.json { render :json => {:error => 'action should be provided'}, :status => :bad_request }
     end
   end
 
@@ -20,4 +20,5 @@ class GameController < ApplicationController
   def create_or_load_game
     session[:game] ||= create_game
   end
+
 end
