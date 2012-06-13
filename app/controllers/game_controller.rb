@@ -3,7 +3,7 @@ class GameController < ApplicationController
   before_filter :authenticate_user!, :except => :index
   before_filter :validate_request, :only => :move
 
-  VALID_MOVES = [:put]
+  VALID_MOVES = [:put, :beat]
 
   def index
   end

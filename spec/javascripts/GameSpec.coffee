@@ -72,13 +72,19 @@ describe 'GameHelper', ->
             {suit: 'Heart', card: '10'}
           ]
         ]
+        @game.opponent = 4
+        @game.deck = 1
         GameHelper.loadData($('#gamefield'), @game)
       it "adds card to a table", ->
-        console.log @game.table
         expect($("#table .cards-stack").length).toBe(2)
         secondStack = $("#table .cards-stack:gt(0)")
         expect(secondStack).toContain(".attack-card.card.cards-hearts9")
         expect(secondStack).toContain(".defense-card.card.cards-hearts10")
+      it "adds opponent cards to a table", ->
+        expect($("#opponent_cards .card").length).toBe(4)
+      it "adds opponent cards to a table", ->
+        expect($('#deck')).not.toBeVisible
+
 
   describe "card to image converter", ->
     verifyClass = (suit, card, image) ->
