@@ -1,4 +1,9 @@
 class Card
+  include ActiveModel::Validations
+  include ConstantsHelper::GameConstants
+  validates_presence_of :card, :suit
+  validates_inclusion_of :card, :in => CARDS
+  validates_inclusion_of :suit, :in => SUITS
   attr_reader :suit, :card, :card_number
 
   def initialize(suit, card)

@@ -18,14 +18,15 @@ module AiHelper
     end
 
     def put(card)
-      @game.put(card)
-      do_my_turn unless my_move
+      if @game.put(card) && !my_move
+        do_my_turn
+      end
     end
 
     def beat(card)
       # TODO Find out how to do this with metaprogramming
       @game.beat(card)
-      do_my_turn if my_move()
+      do_my_turn if my_move
     end
 
     def initialize(game)
@@ -47,6 +48,7 @@ module AiHelper
     end
 
     def do_defense
+      raise "Trying to perform defense at empty table" if table.empty?
       card_to_beat = table.last[0]
       beating = @game.player2_cards.select { |x| x.beats?(card_to_beat, trump) }.sort { |x, y|
         if (x.suit) == (y.suit)

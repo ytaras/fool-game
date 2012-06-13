@@ -52,17 +52,17 @@ describe Game do
       it "does nothing on wrong card" do
         @game.stub(:current_move => :player1)
         card = @game.player2_cards.first
-        @game.put(card)
+        @game.put(card).should be_false
         @game.table.should be_empty
       end
 
       it "dont allow to put card if not same card" do
         @game = Game.new(Array.new(Game::SORTED_DECK))
         first_card = @game.player2_cards.last
-        @game.put(first_card)
+        @game.put(first_card).should be_true
         second_card = @game.player2_cards.last
         second_card.card.should_not == first_card.card
-        @game.put(second_card)
+        @game.put(second_card).should be_false
 
         @game.table.should == [[first_card]]
         @game.player2_cards.should include(second_card)

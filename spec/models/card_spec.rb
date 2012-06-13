@@ -25,4 +25,25 @@ describe Card do
       n.should_not be_beats(t, :Heart)
     end
   end
+
+  describe :valid do
+    describe "invalid card" do
+
+      before(:all) do
+        @card = Card.new(:A, :B)
+      end
+      subject { @card }
+      specify { should_not be_valid }
+      describe do
+        subject { @card.errors.messages }
+        specify { should have_key(:card) }
+        specify { should have_key(:suit) }
+      end
+    end
+
+    describe "valid card" do
+      subject { Card.new(:Heart, :"10") }
+      specify { should be_valid }
+    end
+  end
 end
