@@ -10,7 +10,6 @@ describe 'GameHelper', ->
         {suit: 'Spade', card: '7'}
       ]
       opponent: 3
-      myTurn: false
       myMove: true
       table: [
         [
@@ -71,31 +70,40 @@ describe 'GameHelper', ->
       verifyClass('Diamond', 'Jack', 'cards-diamondsj')
       verifyClass('Club', '10', 'cards-clubs10')
 
-  describe "my card", ->
-    #    it "puts card on a table on a click", ->
-    #      jasmine.getFixtures().load('game.html')
-    #      spyOn(GameHelper, "card_click")
-    #      GameHelper.card_click
-    #      @game.table = []
-    #      GameHelper.loadData($('#gamefield'), @game)
-    #      card_to_put = $("#hand ." + GameHelper.class_name(@game.cards[0]))
-    #      card_to_put.click()
-
   describe "card_click", ->
     beforeEach ->
       spyOn($, "ajax").andCallFake (options) ->
         options.success()
-      jasmine.getFixtures().load('game.html')
-      GameHelper.loadData $("#gamefield"), @game
-    it "issues an ajax request on put", ->
-      GameHelper.card_click @game.cards[0]
-      options = $.ajax.mostRecentCall.args[0]
-      expect(options["url"]).toBe "/game/move"
-      expect(options["type"]).toBe "POST"
-      expect(options["data"]).toEqual
-        "beat": @game.cards[0]
-    it "can handle div elements corectly", ->
-      GameHelper.card_click $("#hand ." + GameHelper.class_name(@game.cards[0]))[0]
-      options = $.ajax.mostRecentCall.args[0]
-      expect(options["data"]).toEqual
-        "beat": @game.cards[0]
+    describe 'on my move', ->
+      beforeEach ->
+        @game.myMove = true
+        jasmine.getFixtures().load('game.html')
+        GameHelper.loadData $("#gamefield"), @game
+      it "issues an ajax request on put", ->
+        GameHelper.card_click @game.cards[0]
+        options = $.ajax.mostRecentCall.args[0]
+        expect(options["url"]).toBe "/game/move"
+        expect(options["type"]).toBe "POST"
+        expect(options["data"]).toEqual
+          move: "put"
+          card: @game.cards[0]
+      it "can handle div elements corectly", ->
+        GameHelper.card_click $("#hand ." + GameHelper.class_name(@game.cards[0]))[0]
+        options = $.ajax.mostRecentCall.args[0]
+        expect(options["data"]).toEqual
+          move: "put"
+          card: @game.cards[0]
+
+    describe 'on his move', ->
+      beforeEach ->
+        @game.myMove = false
+        jasmine.getFixtures().load('game.html')
+        GameHelper.loadData $("#gamefield"), @game
+      it "issues an ajax request on put", ->
+        GameHelper.card_click @game.cards[0]
+        options = $.ajax.mostRecentCall.args[0]
+        expect(options["url"]).toBe "/game/move"
+        expect(options["type"]).toBe "POST"
+        expect(options["data"]).toEqual
+          move: "beat"
+          card: @game.cards[0]

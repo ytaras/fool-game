@@ -12,6 +12,7 @@ createElement: (name, aClass, text) ->
   return elem
 
 loadData: (element, game) ->
+  window.game = game
   element.find('#trump').append GameHelper.createCardDiv(game.trumpCard)
   GameHelper.visible('#deck', game.deck > 1)
   GameHelper.visible('#trump', game.deck > 0)
@@ -29,7 +30,6 @@ loadData: (element, game) ->
     opponentElem.append GameHelper.createElement("div", "card cards-backblue-1")
 
 card_click: (card) ->
-  console.log card
   if card instanceof HTMLElement
     card = {"card": card.dataset.card, "suit": card.dataset.suit}
   # TODO Error handling
@@ -37,7 +37,8 @@ card_click: (card) ->
     "type": "POST"
     "url": "/game/move"
     "data":
-      "beat": card
+      move: (if game.myMove then 'put' else 'beat')
+      card: card
     success: (result) ->
       console.log "Callback"
     error: (result, status, errorThrown) ->
