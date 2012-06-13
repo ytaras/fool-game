@@ -13,11 +13,13 @@ class Game
   delegate :trump_card, :trump, :to => :deck
   delegate :cards, :to => :player1, :prefix => :player1
   delegate :cards, :to => :player2, :prefix => :player2
+  delegate :cards, :to => :table, :prefix => :table
+  delegate :available, :to => :table
 
   def initialize(starting_deck)
     @deck = Deck.new(starting_deck)
     @hands = {:player1 => Hand.new, :player2 => Hand.new}
-    @table = []
+    @table = Table.new
     @discarded = []
     next_move
   end
@@ -31,7 +33,7 @@ class Game
   def put(card)
     cards = @hands[current_move]
     return unless table.empty? || available.include?(card.card)
-    table << [card] if cards.delete(card)
+    table.put(card) if cards.delete(card)
   end
 
   def take
@@ -41,16 +43,14 @@ class Game
     next_move(false)
   end
 
-  def available
-    table.flatten.map { |e| e.card }.uniq
-  end
 
   def beat(beating)
+    # TODO Move check logic to table
     cards = @hands[current_defense]
-    return if table.empty? || table.last.size > 1
-    to_beat = table.last[0]
+    return unless @table.move == :defense
+    to_beat = @table.card_to_beat
     if beating.beats?(to_beat, trump) && cards.delete(beating)
-      table.last << beating
+      @table.beat beating
     end
   end
 
@@ -76,10 +76,6 @@ class Game
 
 
   private
-
-  def table_cards
-    table.flatten
-  end
 
   def draw_cards(player)
     hand = @hands[player]

@@ -42,7 +42,7 @@ describe Game do
         card = @game.player1_cards[0]
         @game.put(card)
         @game.player1_cards.should_not include(card)
-        @game.table.should include([card])
+        @game.table.should include(card)
       end
 
       it "does nothing on wrong card" do
@@ -60,17 +60,13 @@ describe Game do
         second_card.card.should_not == first_card.card
         @game.put(second_card).should be_false
 
-        @game.table.should == [[first_card]]
+        @game.table.cards.should == [first_card]
         @game.player2_cards.should include(second_card)
       end
     end
 
     describe "table" do
       it "allows only cards which are present" do
-        @game.table << [Card.new(:Heart, :Queen)]
-        @game.table << [Card.new(:Heart, :"9"), Card.new(:Club, :"8")]
-        @game.table << [Card.new(:Heart, :"10"), Card.new(:Heart, :"8")]
-        @game.available.should =~ [:Queen, :"9", :"8", :"10"]
       end
     end
 
@@ -96,7 +92,7 @@ describe Game do
         beating_card = @game.player1_cards.last
         @game.beat(beating_card)
         @game.player1_cards.should_not include(beating_card)
-        @game.table.map { |x| x[1] }.should include(beating_card)
+        @game.table.should include(beating_card)
       end
 
       it "does nothing on wrong params" do
@@ -109,12 +105,12 @@ describe Game do
       it "does nothing if card cant beat" do
         @game.put(@game.player2_cards[0])
         # Verify if we cant beat
-        card_on_table = @game.table.flatten.last
+        card_on_table = @game.table.card_to_beat
         beating_card = @game.player1_cards.last
         beating_card.should_not be_beats(card_on_table)
         @game.beat(beating_card)
         @game.player1_cards.should include(beating_card)
-        @game.table.last.should == [card_on_table]
+        @game.table.card_to_beat.should == card_on_table
       end
     end
 
@@ -125,7 +121,7 @@ describe Game do
 
       it "takes all cards from table to defending player" do
         @game.put(@game.player2_cards.last)
-        card_on_table = @game.table.flatten.last
+        card_on_table = @game.table.card_to_beat
         @game.take
         @game.player1_cards.should include(card_on_table)
         @game.current_move.should == :player2

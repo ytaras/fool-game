@@ -53,7 +53,7 @@ module AiHelper
 
     def do_defense
       raise "Trying to perform defense at empty table" if table.empty?
-      card_to_beat = table.last[0]
+      card_to_beat = table.card_to_beat
       beating = @game.player2.beats(card_to_beat, trump).first
       if beating.nil?
         game.take
