@@ -8,7 +8,7 @@ describe Game do
   describe "game start" do
     it "deck contains all cards" do
       @game.should have(36 - 6 - 6).deck
-      all_cards = @game.deck.cards + @game.player1_cards + @game.player2_cards
+      all_cards = @game.deck.cards + @game.player1.cards + @game.player2.cards
       all_cards.should =~ Game::SORTED_DECK
       all_cards.should_not == Game::SORTED_DECK
     end
@@ -39,7 +39,7 @@ describe Game do
     describe "put" do
       it "allow to put card on table" do
         @game.stub(:current_move => :player1)
-        card = @game.player1_cards.first
+        card = @game.player1_cards[0]
         @game.put(card)
         @game.player1_cards.should_not include(card)
         @game.table.should include([card])
@@ -47,7 +47,7 @@ describe Game do
 
       it "does nothing on wrong card" do
         @game.stub(:current_move => :player1)
-        card = @game.player2_cards.first
+        card = @game.player2_cards[0]
         @game.put(card).should be_false
         @game.table.should be_empty
       end
@@ -90,7 +90,7 @@ describe Game do
 
         # Verifying starting conditions
         @game.trump.should == :Spade
-        @game.player1_cards.first.should be_beats(@game.player2_cards.last)
+        @game.player1_cards[0].should be_beats(@game.player2_cards.last)
 
         @game.put(@game.player2_cards.last)
         beating_card = @game.player1_cards.last
@@ -107,7 +107,7 @@ describe Game do
       end
 
       it "does nothing if card cant beat" do
-        @game.put(@game.player2_cards.first)
+        @game.put(@game.player2_cards[0])
         # Verify if we cant beat
         card_on_table = @game.table.flatten.last
         beating_card = @game.player1_cards.last

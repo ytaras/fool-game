@@ -8,13 +8,15 @@ class Game
   end
 
   attr_accessor :current_move
-  attr_reader :deck, :player_cards, :trump_card, :table, :discarded, :winner
+  attr_reader :deck, :trump_card, :table, :discarded, :winner
 
   delegate :trump_card, :trump, :to => :deck
+  delegate :cards, :to => :player1, :prefix => :player1
+  delegate :cards, :to => :player2, :prefix => :player2
 
   def initialize(starting_deck)
     @deck = Deck.new(starting_deck)
-    @player_cards = {:player1 => [], :player2 => []}
+    @hands = {:player1 => Hand.new, :player2 => Hand.new}
     @table = []
     @discarded = []
     next_move
@@ -27,14 +29,14 @@ class Game
   end
 
   def put(card)
-    cards = player_cards[current_move]
+    cards = @hands[current_move]
     return unless table.empty? || available.include?(card.card)
     table << [card] if cards.delete(card)
   end
 
   def take
-    cards = player_cards[current_defense]
-    table_cards.each { |e| cards.push(e) }
+    cards = @hands[current_defense]
+    cards.add table_cards
     table.clear
     next_move(false)
   end
@@ -44,7 +46,7 @@ class Game
   end
 
   def beat(beating)
-    cards = player_cards[current_defense]
+    cards = @hands[current_defense]
     return if table.empty? || table.last.size > 1
     to_beat = table.last[0]
     if beating.beats?(to_beat, trump) && cards.delete(beating)
@@ -64,13 +66,14 @@ class Game
     " ""
   end
 
-  def player1_cards
-    player_cards[:player1]
+  def player1
+    @hands[:player1]
   end
 
-  def player2_cards
-    player_cards[:player2]
+  def player2
+    @hands[:player2]
   end
+
 
   private
 
@@ -79,16 +82,15 @@ class Game
   end
 
   def draw_cards(player)
-    cards = player_cards[player]
-    cards_to_draw = 6 - cards.size
+    hand = @hands[player]
+    cards_to_draw = 6 - hand.size
     if cards_to_draw > 0
-      deck.draw(cards_to_draw).each { |it| cards.push(it) }
+      hand.add deck.draw(cards_to_draw)
     end
   end
 
   def smallest_trump(player)
-    cards = player_cards[player]
-    cards.select { |it| it.suit == trump }.min_by { |it| it.card_number }
+    @hands[player].smallest_of(trump)
   end
 
   def current_defense

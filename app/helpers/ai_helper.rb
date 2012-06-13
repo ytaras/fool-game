@@ -54,15 +54,7 @@ module AiHelper
     def do_defense
       raise "Trying to perform defense at empty table" if table.empty?
       card_to_beat = table.last[0]
-      beating = @game.player2_cards.select { |x| x.beats?(card_to_beat, trump) }.sort { |x, y|
-        if (x.suit) == (y.suit)
-          x.card_number <=> y.card_number
-        elsif x.suit == trump
-          1
-        else
-          -1
-        end
-      }.first
+      beating = @game.player2.beats(card_to_beat, trump).first
       if beating.nil?
         game.take
       else
@@ -98,11 +90,11 @@ module AiHelper
     private
 
     def non_trumps
-      game.player2_cards.select { |x| x.suit != game.trump }
+      game.player2.none_of(game.trump)
     end
 
     def trumps
-      game.player2_cards.select { |x| x.suit == game.trump }
+      game.player2.all_of(game.trump)
     end
 
   end
