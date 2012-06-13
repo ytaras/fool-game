@@ -45,9 +45,10 @@ describe GameController do
       end
 
       it "puts card on a table" do
-        post :move, :format => 'json', :move => 'put', :card => {'suit' => 'Heart', 'card' => '6'}
-        ActiveSupport::JSON.decode(response.body)['game'].keys.should =~
-            ['table', 'deck', 'cards', 'trumpCard', 'opponent']
+        post :move, :format => 'json', :move => 'put', :card => {:suit => 'Heart', :card => '6'}
+        #ActiveSupport::JSON.decode(response.body).should =~ {}
+        ActiveSupport::JSON.decode(response.body)['game'].keys.map { |x| x.to_sym }.should =~
+            [:table, :deck, :cards, :trumpCard, :opponent, :myMove]
       end
     end
   end

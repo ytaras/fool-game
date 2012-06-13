@@ -34,6 +34,10 @@ module AiHelper
       do_my_turn if my_move
     end
 
+    def player_move
+      !my_move
+    end
+
     private
     def my_move
       @game.current_move == :player2

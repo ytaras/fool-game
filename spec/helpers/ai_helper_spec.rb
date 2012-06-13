@@ -85,16 +85,10 @@ describe AiHelper do
   end
 
   describe AiHelper::AiGame do
-    it "shows trump card" do
-      @game.trump_card.should_not be_nil
-    end
-
-    it "knows amount of cards in deck" do
-      @game.deck.should == @game.game.deck_cards.size
-    end
-
-    it "knows amount of cards in opponent hand" do
-      @game.opponent.should == @game.game.player1_cards.size
-    end
+    subject { @game }
+    specify { @game.trump_card.should_not be_nil }
+    specify { @game.deck.should == @game.game.deck_cards.size }
+    specify { @game.opponent.should == @game.game.player1_cards.size }
+    specify { @game.player_move.should == (@game.current_move == :player1) }
   end
 end
