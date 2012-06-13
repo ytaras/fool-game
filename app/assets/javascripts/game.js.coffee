@@ -12,6 +12,14 @@ createElement: (name, aClass, text) ->
   return elem
 
 loadData: (element, game) ->
+  # TODO This is unefficient as I clean things every time I load them from server
+  # Anyway I don't want to spend too much time learning JS here, so this is a fixitem for future
+  $('#table .cards-stack').remove()
+  $('#trump .card').remove()
+  $('#deck .card').remove()
+  $('#hand .card').remove()
+  $('#opponent_card .card').remove()
+
   window.game = game
   element.find('#trump').append GameHelper.createCardDiv(game.trumpCard)
   GameHelper.visible('#deck', game.deck > 1)
@@ -40,7 +48,7 @@ card_click: (card) ->
       move: (if game.myMove then 'put' else 'beat')
       card: card
     success: (result) ->
-      console.log "Callback"
+      GameHelper.loadData($('#gamefield'), result.game)
     error: (result, status, errorThrown) ->
       console.log result
 

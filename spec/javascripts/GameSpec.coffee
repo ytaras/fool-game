@@ -60,6 +60,25 @@ describe 'GameHelper', ->
       expect(secondStack).not.toContain(".defense-card")
     it "shows opponent cards", ->
       expect($("#opponent_cards .card").length).toBe(3)
+    describe 'when game is reloaded', ->
+      beforeEach ->
+        @game.table = [
+          [
+            {suit: 'Spade', card: '8'},
+            {suit: 'Spade', card: '9'}
+          ]
+          [
+            {suit: 'Heart', card: '9'}
+            {suit: 'Heart', card: '10'}
+          ]
+        ]
+        GameHelper.loadData($('#gamefield'), @game)
+      it "adds card to a table", ->
+        console.log @game.table
+        expect($("#table .cards-stack").length).toBe(2)
+        secondStack = $("#table .cards-stack:gt(0)")
+        expect(secondStack).toContain(".attack-card.card.cards-hearts9")
+        expect(secondStack).toContain(".defense-card.card.cards-hearts10")
 
   describe "card to image converter", ->
     verifyClass = (suit, card, image) ->
@@ -73,7 +92,6 @@ describe 'GameHelper', ->
   describe "card_click", ->
     beforeEach ->
       spyOn($, "ajax").andCallFake (options) ->
-        options.success()
     describe 'on my move', ->
       beforeEach ->
         @game.myMove = true
