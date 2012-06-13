@@ -8,3 +8,4 @@ node :cards do
     partial("game/card", :object => card)
   end
 end
+# TODO Refactoring done, view should be updated

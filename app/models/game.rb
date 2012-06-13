@@ -8,19 +8,16 @@ class Game
   end
 
   attr_accessor :current_move
-  attr_reader :deck_cards, :player_cards, :trump_card, :table, :discarded, :winner
+  attr_reader :deck, :player_cards, :trump_card, :table, :discarded, :winner
+
+  delegate :trump_card, :trump, :to => :deck
 
   def initialize(starting_deck)
-    @deck_cards = starting_deck.to_a
+    @deck = Deck.new(starting_deck)
     @player_cards = {:player1 => [], :player2 => []}
-    @trump_card = @deck_cards.last
     @table = []
     @discarded = []
     next_move
-  end
-
-  def trump
-    @trump_card.suit
   end
 
   def pass
@@ -85,7 +82,7 @@ class Game
     cards = player_cards[player]
     cards_to_draw = 6 - cards.size
     if cards_to_draw > 0
-      deck_cards.shift(cards_to_draw).each { |it| cards.push(it) }
+      deck.draw(cards_to_draw).each { |it| cards.push(it) }
     end
   end
 

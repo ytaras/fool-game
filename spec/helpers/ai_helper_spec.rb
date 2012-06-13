@@ -87,7 +87,7 @@ describe AiHelper do
   describe AiHelper::AiGame do
     subject { @game }
     specify { @game.trump_card.should_not be_nil }
-    specify { @game.deck.should == @game.game.deck_cards.size }
+    specify { @game.deck.should == @game.game.deck.length }
     specify { @game.opponent.should == @game.game.player1_cards.size }
     specify { @game.player_move.should == (@game.current_move == :player1) }
   end

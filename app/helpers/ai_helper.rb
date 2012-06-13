@@ -10,7 +10,7 @@ module AiHelper
     attr_reader :game
 
     def deck
-      @game.deck_cards.size
+      @game.deck.length
     end
 
     def opponent

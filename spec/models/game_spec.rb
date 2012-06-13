@@ -7,14 +7,10 @@ describe Game do
 
   describe "game start" do
     it "deck contains all cards" do
-      @game.should have(36 - 6 - 6).deck_cards
-      all_cards = @game.deck_cards + @game.player1_cards + @game.player2_cards
+      @game.should have(36 - 6 - 6).deck
+      all_cards = @game.deck.cards + @game.player1_cards + @game.player2_cards
       all_cards.should =~ Game::SORTED_DECK
       all_cards.should_not == Game::SORTED_DECK
-    end
-
-    it "knows the trump" do
-      @game.trump.should == @game.deck_cards.last.suit
     end
 
     it "table is empty" do
