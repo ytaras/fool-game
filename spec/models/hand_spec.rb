@@ -20,22 +20,6 @@ describe Hand do
     specify { subject.should be_empty }
   end
 
-  describe :add do
-    pending "is private" do
-      context "add one item" do
-        before(:each) { subject.add(Hand::SORTED_DECK.last) }
-        specify { subject.should have(7).items }
-        specify { subject.cards.last.should == Deck::SORTED_DECK.last }
-      end
-      context "add few item" do
-        before(:each) { subject.add(Hand::SORTED_DECK.last(3)) }
-        specify { subject.should have(9).items }
-        specify { subject.cards.last(3).should == Deck::SORTED_DECK.last(3) }
-        specify { subject.cards.first(6).should == Deck::SORTED_DECK.first(6) }
-      end
-    end
-  end
-
   context 'when put on table' do
     before(:each) {
       @table = Table.new
