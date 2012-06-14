@@ -20,6 +20,7 @@ class Game
     @deck = Deck.new(starting_deck)
     @hands = {:player1 => Hand.new, :player2 => Hand.new}
     @table = Table.new
+    @table.trump = trump
     @discarded = []
     next_move
   end

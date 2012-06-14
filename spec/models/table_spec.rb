@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Table do
   subject { Table.new }
+  before(:each) { subject.trump = Table::SUITS.last }
   specify { should be_empty }
 
 
@@ -21,7 +22,8 @@ describe Table do
     specify { should have(1).cards }
     specify { subject.stacks_count == 1 }
     specify { should include(Table::SORTED_DECK.first) }
-    context do
+    specify { subject.beat(Table::SORTED_DECK[10]).should be_false }
+    context "when trying to attack during defense" do
       before(:each) { @result = subject.put(Table::SORTED_DECK[1]) }
       specify { @result.should be_false }
       specify { should have(1).cards }
@@ -35,6 +37,8 @@ describe Table do
       specify { subject.stacks_count == 1 }
       specify { should include(Table::SORTED_DECK[1]) }
       specify { subject.move.should == :attack }
+      specify { subject.put(Table::SORTED_DECK[2]).should be_false }
+      specify { subject.put(Card.new(:Heart, subject.available.first)).should be_true }
     end
   end
 

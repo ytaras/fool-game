@@ -6,6 +6,7 @@ describe Game do
   end
 
   describe "game start" do
+    specify { @game.table.trump.should == @game.trump }
     it "deck contains all cards" do
       @game.should have(36 - 6 - 6).deck
       all_cards = @game.deck.cards + @game.player1.cards + @game.player2.cards
