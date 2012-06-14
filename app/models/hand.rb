@@ -37,4 +37,11 @@ class Hand
       end
     }
   end
+
+  def put(card, table)
+    return false unless include?(card)
+    if table.put card
+      delete(card)
+    end
+  end
 end

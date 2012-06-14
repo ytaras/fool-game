@@ -33,8 +33,7 @@ class Game
 
   def put(card)
     cards = @hands[current_move]
-    return unless table.empty? || available.include?(card.card)
-    table.put(card) if cards.delete(card)
+    cards.put(card, table)
   end
 
   def take

@@ -34,6 +34,20 @@ describe Hand do
     end
   end
 
+  context 'when put on table' do
+    before(:each) {
+      @table = Table.new
+      @table.trump = :Heart
+      @result = subject.put(subject[0], @table)
+    }
+    specify { @result.should be_true }
+    specify { @table.should have(1).cards }
+    specify { should have(5).cards }
+    specify { lambda {
+      subject.put(Card.new(:Clubs, :'9'), @table)
+    }.should_not change { @table.cards } }
+  end
+
   context do
     subject { Hand.new([
                            Card.new(:Hearts, :'10'),
