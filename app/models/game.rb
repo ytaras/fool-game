@@ -1,6 +1,5 @@
 class Game
   include ConstantsHelper::GameConstants
-  # TODO Refactor - separate out few classes, probably table and hand
 
   def self.create_game(starting_deck = nil)
     starting_deck = SORTED_DECK.shuffle unless starting_deck
