@@ -6,34 +6,41 @@ describe Game do
   end
 
   describe "game start" do
-    specify { @game.table.trump.should == @game.trump }
-    it "deck contains all cards" do
-      @game.should have(36 - 6 - 6).deck
-      all_cards = @game.deck.cards + @game.player1.cards + @game.player2.cards
-      all_cards.should =~ Game::SORTED_DECK
-      all_cards.should_not == Game::SORTED_DECK
+    subject { @game }
+
+    specify { subject.table.should be_empty }
+    specify { subject.discarded.should be_empty }
+    specify { should have(36 - 6 - 6).deck }
+    specify { should have(6).player1_cards }
+    specify { should have(6).player2_cards }
+
+    context do
+      before(:each) { @all_cards = @game.deck.cards + @game.player1.cards + @game.player2.cards }
+      subject { @all_cards }
+      specify { should =~ Game::SORTED_DECK }
+      specify { should_not == Game::SORTED_DECK }
     end
 
-    it "table is empty" do
-      @game.table.should be_empty
+    context 'player2 should move' do
+      before(:each) {
+        start_deck = Game::SORTED_DECK.take(12)
+        start_deck.push start_deck.shift
+        @game = Game.create_game(start_deck)
+      }
+      specify { subject.trump.should == :Spade }
+      specify { subject.current_move.should == :player2 }
     end
 
-    it "discarded is empty" do
-      @game.discarded.should be_empty
+    context 'player1 should move' do
+      before(:each) {
+        start_deck = Game::SORTED_DECK.take(12)
+        start_deck.push start_deck.delete(Card.new(:Spade, :'7'))
+        @game = Game.create_game(start_deck)
+      }
+      specify { subject.trump.should == :Spade }
+      specify { subject.current_move.should == :player1 }
     end
 
-    it "gives first turn to a gamer with lowest trump" do
-      start_deck = Game::SORTED_DECK.take(12)
-      start_deck.push start_deck.shift
-      @game = Game.create_game(start_deck)
-      @game.trump.should == :Spade
-      @game.current_move.should == :player2
-    end
-
-    it "each player 6 cards each on start" do
-      @game.should have(6).player1_cards
-      @game.should have(6).player2_cards
-    end
   end
 
   describe "in game" do
@@ -170,3 +177,4 @@ describe Game do
     end
   end
 end
+
