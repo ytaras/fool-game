@@ -9,6 +9,7 @@ describe Table do
     specify { subject.move.should == :attack }
     specify { should have(0).cards }
     specify { subject.stacks_count == 0 }
+    specify { subject.beat(Card.new(:Heart, :'6')).should be_false }
     describe :put do
       specify { subject.put(Table::SORTED_DECK.first).should be_true }
     end

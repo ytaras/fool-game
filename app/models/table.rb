@@ -21,6 +21,7 @@ class Table
   end
 
   def beat(card)
+    return false unless move == :defense
     @table.last << card
     @move = :attack
   end
