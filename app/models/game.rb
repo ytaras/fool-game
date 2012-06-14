@@ -43,13 +43,7 @@ class Game
 
 
   def beat(beating)
-    # TODO Move check logic to table
-    cards = @hands[current_defense]
-    return unless @table.move == :defense
-    to_beat = @table.card_to_beat
-    if beating.beats?(to_beat, trump) && cards.delete(beating)
-      @table.beat beating
-    end
+    @hands[current_defense].beat(beating, table)
   end
 
   def to_s

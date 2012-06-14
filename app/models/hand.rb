@@ -47,6 +47,13 @@ class Hand
     end
   end
 
+  def beat(card, table)
+    return false unless include?(card)
+    if table.beat(card)
+      delete(card)
+    end
+  end
+
   def take(table)
     @cards.push table.cards
     @cards.flatten!

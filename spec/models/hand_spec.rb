@@ -50,6 +50,40 @@ describe Hand do
     }.should_not change { @table.cards } }
   end
 
+  context 'when attacking card present' do
+    before(:each) {
+      @hand1 = Hand.new([
+                            Card.new(:Hearts, :'10'),
+                        ])
+      @hand2 = Hand.new([
+                            Card.new(:Hearts, :Jack),
+                            Card.new(:Spade, :Ace),
+                        ])
+      @table = Table.new
+      @hand1.put(@hand1.cards.first, @table)
+    }
+
+    context 'when beat with correct card' do
+      before(:each) {
+        @beat_card = @hand2.cards.first
+        @result = @hand2.beat(@beat_card, @table)
+      }
+      specify { @table.should have(2).cards }
+      specify { @result.should be_true }
+      specify { @hand2.should_not include(@beat_card) }
+    end
+    context 'when beat with incorrect card' do
+      before(:each) {
+        @beat_card = @hand2.cards[1]
+        @result = @hand2.beat(@beat_card, @table)
+      }
+      specify { @table.should have(1).cards }
+      specify { @result.should be_false }
+      specify { @hand2.should include(@beat_card) }
+
+    end
+  end
+
   context do
     subject { Hand.new([
                            Card.new(:Hearts, :'10'),
