@@ -37,9 +37,7 @@ class Game
   end
 
   def take
-    cards = @hands[current_defense]
-    cards.add table_cards
-    table.clear
+    @hands[current_defense].take(table)
     next_move(false)
   end
 
@@ -78,11 +76,7 @@ class Game
   private
 
   def draw_cards(player)
-    hand = @hands[player]
-    cards_to_draw = 6 - hand.size
-    if cards_to_draw > 0
-      hand.add deck.draw(cards_to_draw)
-    end
+    @hands[player].draw(@deck)
   end
 
   def smallest_trump(player)

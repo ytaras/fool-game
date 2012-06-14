@@ -9,9 +9,11 @@ class Hand
     @cards = cards.dup
   end
 
-  def add(cards)
-    @cards.push cards
-    @cards.flatten!
+  def draw(deck)
+    cards_to_draw = 6 - size
+    if cards_to_draw > 0
+      add deck.draw(cards_to_draw)
+    end
   end
 
   def none_of(suit)
@@ -44,4 +46,18 @@ class Hand
       delete(card)
     end
   end
+
+  def take(table)
+    @cards.push table.cards
+    @cards.flatten!
+    table.clear
+  end
+
+  private
+
+  def add(cards)
+    @cards.push cards
+    @cards.flatten!
+  end
+
 end

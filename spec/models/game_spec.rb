@@ -120,15 +120,18 @@ describe Game do
         @game = Game.new(Array.new(Game::SORTED_DECK))
       end
 
-      it "takes all cards from table to defending player" do
-        @game.put(@game.player2_cards.last)
-        card_on_table = @game.table.card_to_beat
-        @game.take
-        @game.player1_cards.should include(card_on_table)
-        @game.current_move.should == :player2
-        @game.should have(6).player2_cards
-        @game.should have(7).player1_cards
-        @game.table.should be_empty
+      context "takes all cards from table to defending player" do
+        before(:each) {
+          @game.put(@game.player2_cards.last)
+          @card_on_table = @game.table.card_to_beat
+          @game.take
+        }
+        subject { @game }
+        specify { @game.player1_cards.should include(@card_on_table) }
+        specify { @game.current_move.should == :player2 }
+        specify { should have(6).player2_cards }
+        specify { should have(7).player1_cards }
+        specify { @game.table.should be_empty }
       end
 
       it "puts all cards to discarded" do

@@ -21,16 +21,18 @@ describe Hand do
   end
 
   describe :add do
-    context "add one item" do
-      before(:each) { subject.add(Hand::SORTED_DECK.last) }
-      specify { subject.should have(7).items }
-      specify { subject.cards.last.should == Deck::SORTED_DECK.last }
-    end
-    context "add few item" do
-      before(:each) { subject.add(Hand::SORTED_DECK.last(3)) }
-      specify { subject.should have(9).items }
-      specify { subject.cards.last(3).should == Deck::SORTED_DECK.last(3) }
-      specify { subject.cards.first(6).should == Deck::SORTED_DECK.first(6) }
+    pending "is private" do
+      context "add one item" do
+        before(:each) { subject.add(Hand::SORTED_DECK.last) }
+        specify { subject.should have(7).items }
+        specify { subject.cards.last.should == Deck::SORTED_DECK.last }
+      end
+      context "add few item" do
+        before(:each) { subject.add(Hand::SORTED_DECK.last(3)) }
+        specify { subject.should have(9).items }
+        specify { subject.cards.last(3).should == Deck::SORTED_DECK.last(3) }
+        specify { subject.cards.first(6).should == Deck::SORTED_DECK.first(6) }
+      end
     end
   end
 
@@ -79,6 +81,36 @@ describe Hand do
       specify { subject.beats(Card.new(:Hearts, :'7'), :Club).should have(3).items }
       specify { subject.beats(Card.new(:Hearts, :'7'), :Hearts).should have(1).items }
       specify { subject.beats(Card.new(:Hearts, :Jack), :Hearts).should be_empty }
+    end
+
+    describe :draw do
+      context "when enough cards" do
+        before(:each) {
+          @deck = Deck.new(Deck::SORTED_DECK.take(3))
+          subject.draw(@deck)
+        }
+        specify { should have(6).cards }
+        specify { @deck.should have(1).cards }
+      end
+      context "when no enough cards" do
+        before(:each) {
+          @deck = Deck.new(Deck::SORTED_DECK.take(1))
+          subject.draw(@deck)
+        }
+        specify { should have(5).cards }
+        specify { @deck.should have(0).cards }
+      end
+    end
+
+    describe :take do
+      before(:each) {
+        @table = Table.new
+        @table.put(Deck::SORTED_DECK.take(5))
+        subject.take(@table)
+      }
+
+      specify { should have(4 + 5).cards }
+      specify { @table.should be_empty }
     end
   end
 
