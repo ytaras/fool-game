@@ -41,6 +41,15 @@ describe Game do
       specify { subject.current_move.should == :player1 }
     end
 
+    context 'with listener' do
+      before(:each) {
+        @listener = LogObserver.new
+        @game = Game.create_game :listener => @listener
+      }
+      subject { @listener }
+      specify { should have(1).items }
+    end
+
   end
 
   describe "in game" do

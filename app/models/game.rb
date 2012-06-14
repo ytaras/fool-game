@@ -1,9 +1,16 @@
 class Game
   include ConstantsHelper::GameConstants
+  include Observable
 
-  def self.create_game(starting_deck = nil)
-    starting_deck = SORTED_DECK.shuffle unless starting_deck
-    Game.new(starting_deck)
+  def self.create_game(options = {})
+    if options.is_a?(Hash)
+      starting_deck = options[:deck]
+    else
+      starting_deck = options
+      options = {}
+    end
+    starting_deck ||= SORTED_DECK.shuffle
+    Game.new(starting_deck, options)
   end
 
   attr_accessor :current_move
@@ -15,12 +22,13 @@ class Game
   delegate :cards, :to => :table, :prefix => :table
   delegate :available, :to => :table
 
-  def initialize(starting_deck)
+  def initialize(starting_deck, options = {})
     @deck = Deck.new(starting_deck)
     @hands = {:player1 => Hand.new, :player2 => Hand.new}
     @table = Table.new
     @table.trump = trump
     @discarded = []
+    add_observer options[:listener] unless options[:listener].nil?
     next_move
   end
 
@@ -48,7 +56,7 @@ class Game
   def to_s
     "" "
 		Game
-			Deck #{deck_cards}
+			Deck #{deck.cards}
 			Player1 #{player1_cards}
 			Player2 #{player2_cards}
 			Table #{table}
@@ -113,6 +121,9 @@ class Game
     elsif turn
       @current_move = current_defense
     end
+
+    changed
+    notify_observers :event => :next_move, :game => self
   end
 
 end
