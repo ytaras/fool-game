@@ -22,6 +22,7 @@ class Table
 
   def beat(card)
     @table.last << card
+    @move = :attack
   end
 
   def cards

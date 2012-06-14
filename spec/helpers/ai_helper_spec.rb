@@ -22,6 +22,7 @@ describe AiHelper do
       beat = Card.new(p2suit, p2card)
       beat.should be_beats(put, @game.trump)
       @game.put(put)
+      @game.table.cards.should include(put)
       @game.table.cards.should include(beat)
     end
 

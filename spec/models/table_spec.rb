@@ -33,6 +33,7 @@ describe Table do
       specify { should have(2).cards }
       specify { subject.stacks_count == 1 }
       specify { should include(Table::SORTED_DECK[1]) }
+      specify { subject.move.should == :attack }
     end
   end
 
@@ -46,12 +47,13 @@ describe Table do
   end
 
   describe :available do
-    before(:all) {
-      subject.put Card.new(:Heart, :"8")
-      subject.beat Card.new(:Heart, :"9")
+    specify {
+      subject.put Card.new(:Heart, :"7")
+      subject.beat Card.new(:Heart, :"8")
       subject.put Card.new(:Club, :"8")
-      subject.beat Card.new(:Club, :"10")
+      subject.beat Card.new(:Club, :"9")
+      subject.available.should =~ [:"7", :"8", :'9']
     }
-    specify { subject.available.should =~ [:"9", :"8", :"10"] }
+
   end
 end
