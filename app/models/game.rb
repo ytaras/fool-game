@@ -108,15 +108,7 @@ class Game
     draw_cards(:player1)
     draw_cards(:player2)
 
-    if player1_cards.empty?
-      if player2_cards.empty?
-        @winner = :none
-      else
-        @winner = :player1
-      end
-    elsif player2_cards.empty?
-      @winner = :player2
-    end
+    return if is_game_end
 
     if @current_move.nil?
       p1_trump = smallest_trump(:player1)
@@ -136,6 +128,24 @@ class Game
 
     changed
     notify_observers :event => :next_move, :game => self
+  end
+
+  def is_game_end
+    p1 = @hands[:player1].empty?
+    p2 = @hands[:player2].empty?
+    return false unless p1 || p2
+    if p1
+      if p2
+        @winner = :none
+      else
+        @winner = :player1
+      end
+    elsif p2
+      @winner = :player2
+    end
+    changed
+    notify_observers :event => :end, :game => self, :winner => winner
+    true
   end
 
 end

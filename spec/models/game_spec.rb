@@ -31,6 +31,7 @@ describe Game do
     end
     its(:table) { should be_empty }
     its(:discarded) { should be_empty }
+    its(:winner) { should be_nil }
     specify { should have(36 - 6 - 6).deck }
     specify { should have(6).player1_cards }
     specify { should have(6).player2_cards }
@@ -224,24 +225,27 @@ describe Game do
       end
     end
 
-    describe "end game" do
-      it "game winner should be nil at start" do
-        @game.winner.should == nil
-      end
-
-      it "game ends when no cards are for any player" do
+    context "when no cards are for any player" do
+      before(:each) {
         start_deck = Array.new(Game::SORTED_DECK.take(7))
         start_deck.push start_deck.shift
-        @game = Game.new(start_deck)
+        @game = Game.create_game :deck => start_deck, :listener => @listener
         @game.should have(1).player2_cards
 
         @game.put(@game.player2_cards.last)
+        @listener.clear
+        @table_cards = @game.table.cards
         @game.take
-
-        @game.winner.should == :player2
+      }
+      its(:winner) { should == :player2 }
+      it_behaves_like 'listener with events' do
+        let(:items) { [
+            {:game => @game, :event => :take, :cards => @table_cards, :player => :player1},
+            {:game => @game, :event => :end, :winner => :player2}
+        ] }
       end
-
     end
+
   end
 end
 
