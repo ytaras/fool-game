@@ -82,7 +82,7 @@ describe AiHelper do
     verify_and_beat(:Diamond, :"8", :Diamond, :"9")
     verify_and_beat(:Heart, :"9", :Heart, :Ace)
     verify_and_beat(:Spade, :"7", :Spade, :Ace)
-    @game.current_move.should == :player1
+    @game.game.winner.should == :player2
   end
 
   describe AiHelper::AiGame do
