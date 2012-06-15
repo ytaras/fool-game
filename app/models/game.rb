@@ -67,7 +67,7 @@ class Game
 			Deck #{deck.cards}
 			Player1 #{player1_cards}
 			Player2 #{player2_cards}
-			Table #{table}
+			Table #{table.cards}
 			Trump #{trump_card}
 			Current move #{current_move}
     " ""

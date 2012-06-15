@@ -117,19 +117,18 @@ describe Game do
       end
     end
 
-    describe "when trying to put" do
+    describe "when trying to beat" do
       before(:each) do
-        @game = Game.create_game Array.new(Game::SORTED_DECK)
+        # TODO Move Game creation to helper
+        start_deck = Array.new(Game::SORTED_DECK).take(12)
+        start_deck.push start_deck.shift
+        @game = Game.create_game :deck => start_deck, :listener => @listener
+        @game.put(@game.player2_cards.last)
+        @listener.clear
       end
       specify { @game.current_move.should == :player2 }
 
       context "correct card" do
-        before(:each) {
-          start_deck = Array.new(Game::SORTED_DECK).take(12)
-          start_deck.push start_deck.shift
-          @game = Game.create_game :deck => start_deck, :listener => @listener
-          @game.put(@game.player2_cards.last)
-        }
         # Verifying preconditions conditions
         its(:trump) { should == :Spade }
         specify { subject.player1_cards[0].should be_beats(subject.table.card_to_beat) }
@@ -137,7 +136,6 @@ describe Game do
         context do
           before(:each) {
             @beating_card = @game.player1_cards.last
-            @listener.clear
             @result = @game.beat(@beating_card)
           }
           specify { @result.should be_true }
@@ -149,22 +147,35 @@ describe Game do
         end
       end
 
-      it "does nothing on wrong params" do
-        beating_card = @game.player1_cards.last
-        @game.beat(beating_card)
-        @game.table.should be_empty
-        @game.player1_cards.should include(beating_card)
+      context "not existing card" do
+        before(:each) {
+          @beating_card = @game.player2_cards.last
+          @result = @game.beat(@beating_card)
+        }
+        its('table.cards') { should_not include(@beating_card) }
+        its(:player2_cards) { should include(@beating_card) }
+        specify { @result.should be_false }
+        include_examples 'empty listener'
       end
 
-      it "does nothing if card cant beat" do
-        @game.put(@game.player2_cards[0])
-        # Verify if we cant beat
-        card_on_table = @game.table.card_to_beat
-        beating_card = @game.player1_cards.last
-        beating_card.should_not be_beats(card_on_table)
-        @game.beat(beating_card)
-        @game.player1_cards.should include(beating_card)
-        @game.table.card_to_beat.should == card_on_table
+      context "not beating card" do
+        before(:each) {
+          start_deck = Array.new(Game::SORTED_DECK).take(12)
+          @game = Game.create_game :deck => start_deck, :listener => @listener
+          @game.put(@game.player2_cards.last)
+          @listener.clear
+          @saved_to_beat = @game.table.card_to_beat
+          @beating = @game.player1_cards.last
+        }
+        specify { @beating.should_not be_beats(@saved_to_beat) }
+        context do
+          before(:each) { @result = @game.beat(@beating) }
+          specify { @result.should be_false }
+          its(:player1_cards) { should include(@beating) }
+          its("table.card_to_beat") { should == @saved_to_beat }
+          its('table.cards') { should_not include(@beating) }
+          include_examples 'empty listener'
+        end
       end
     end
 
