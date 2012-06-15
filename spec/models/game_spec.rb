@@ -179,37 +179,48 @@ describe Game do
       end
     end
 
-    describe "end turn" do
-      before(:each) do
-        @game = Game.new(Array.new(Game::SORTED_DECK))
+    context "when take" do
+      before(:each) {
+        @game = Game.create_game :deck => Game::SORTED_DECK.dup, :listener => @listener
+        @game.put(@game.player2_cards.last)
+        @card_on_table = @game.table.card_to_beat
+        @listener.clear
+        @game.take
+      }
+      its(:player1_cards) { should include(@card_on_table) }
+      its(:current_move) { should == :player2 }
+      specify { should have(6).player2_cards }
+      specify { should have(7).player1_cards }
+      its(:table) { should be_empty }
+      it_behaves_like 'listener with events' do
+        let(:items) { [
+            {:game => @game, :cards => [@card_on_table], :event => :take, :player => :player1},
+            {:game => @game, :event => :next_move}
+        ] }
       end
+    end
 
-      context "takes all cards from table to defending player" do
-        before(:each) {
-          @game.put(@game.player2_cards.last)
-          @card_on_table = @game.table.card_to_beat
-          @game.take
-        }
-        its(:player1_cards) { should include(@card_on_table) }
-        its(:current_move) { should == :player2 }
-        specify { should have(6).player2_cards }
-        specify { should have(7).player1_cards }
-        its(:table) { should be_empty }
-      end
-
-      it "puts all cards to discarded" do
+    context "when pass" do
+      before(:each) {
         start_deck = Array.new(Game::SORTED_DECK).take(14).reverse
-        @game = Game.new(start_deck)
-        @game.player1_cards.last.should be_beats(@game.player2_cards.last)
-
+        @game = Game.create_game :deck => start_deck, :listener => @listener
         @game.put(@game.player2_cards.last)
         @game.beat(@game.player1_cards.last)
+        @table_cards = @game.table.cards
+        @listener.clear
         @game.pass
-        @game.should have(2).discarded
-        @game.table.should be_empty
-        @game.current_move.should == :player1
-        @game.should have(6).player1_cards
-        @game.should have(6).player2_cards
+      }
+      specify { should have(2).discarded }
+      its(:table) { should be_empty }
+      its(:current_move) { should == :player1 }
+      specify { should have(6).player1_cards }
+      specify { should have(6).player1_cards }
+      its(:current_move) { should == :player1 }
+      it_behaves_like 'listener with events' do
+        let(:items) { [
+            {:game => @game, :cards => @table_cards, :event => :dismiss},
+            {:game => @game, :event => :next_move}
+        ] }
       end
     end
 

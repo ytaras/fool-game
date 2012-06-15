@@ -33,7 +33,9 @@ class Game
   end
 
   def pass
-    table_cards.each { |e| @discarded.push e }
+    changed
+    notify_observers :event => :dismiss, :cards => table.cards, :game => self
+    table.cards.each { |e| @discarded.push e }
     table.clear
     next_move
   end
@@ -48,6 +50,8 @@ class Game
   end
 
   def take
+    changed
+    notify_observers :event => :take, :cards => table.cards, :player => current_defense, :game => self
     @hands[current_defense].take(table)
     next_move(false)
   end
