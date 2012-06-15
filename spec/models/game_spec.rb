@@ -8,7 +8,7 @@ describe Game do
 
   subject { @game }
 
-  describe "game start" do
+  describe "when game starts" do
 
     specify { subject.table.should be_empty }
     specify { subject.discarded.should be_empty }
@@ -52,45 +52,55 @@ describe Game do
   end
 
   describe "when in game" do
-    describe :put do
-      context "when correct card" do
+    describe "when trying to put" do
+      shared_examples 'empty listener' do
+        context do
+          subject { @listener }
+          specify { should be_empty }
+        end
+      end
+      context "correct card" do
         before(:each) {
           @listener.clear
           @game.stub(:current_move => :player1)
           @card = @game.player1_cards[0]
-          @game.put(@card)
+          @result = @game.put(@card)
         }
         specify { subject.player1_cards.should_not include(@card) }
         specify { subject.table.should include(@card) }
+        specify { @result.should be_true }
         context do
           subject { @listener }
           specify { should have(1).items }
           specify { should include :game => @game, :card => @card, :event => :put }
         end
       end
-
-      it "does nothing on wrong card" do
-        @game.stub(:current_move => :player1)
-        card = @game.player2_cards[0]
-        @game.put(card).should be_false
-        @game.table.should be_empty
+      context "card not from hand" do
+        before(:each) {
+          @listener.clear
+          @game.stub(:current_move => :player1)
+          @card = @game.player2_cards[0]
+          @result = @game.put(@card)
+        }
+        include_examples 'empty listener'
+        specify { @result.should be_false }
+        its(:table) { should be_empty }
       end
+      context "not allowed card if" do
+        before(:each) {
+          @game = Game.create_game :deck => Array.new(Game::SORTED_DECK), :listener => @listener
+          @first_card = @game.player2_cards.last
+          @game.put(@first_card)
+          @second_card = @game.player2_cards.last
+          @listener.clear
+          @result = @game.put(@second_card)
+        }
+        include_examples 'empty listener'
+        # Verify precondition
+        specify { @second_card.card.should_not == @first_card.card }
 
-      it "dont allow to put card if not same card" do
-        @game = Game.new(Array.new(Game::SORTED_DECK))
-        first_card = @game.player2_cards.last
-        @game.put(first_card).should be_true
-        second_card = @game.player2_cards.last
-        second_card.card.should_not == first_card.card
-        @game.put(second_card).should be_false
-
-        @game.table.cards.should == [first_card]
-        @game.player2_cards.should include(second_card)
-      end
-    end
-
-    describe "table" do
-      it "allows only cards which are present" do
+        its("table.cards") { should == [@first_card] }
+        its(:player2_cards) { should include(@second_card) }
       end
     end
 
