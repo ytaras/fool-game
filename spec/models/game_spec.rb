@@ -29,8 +29,8 @@ describe Game do
     it_behaves_like 'listener with events' do
       let(:items) { {:game => @game, :event => :next_move} }
     end
-    specify { subject.table.should be_empty }
-    specify { subject.discarded.should be_empty }
+    its(:table) { should be_empty }
+    its(:discarded) { should be_empty }
     specify { should have(36 - 6 - 6).deck }
     specify { should have(6).player1_cards }
     specify { should have(6).player2_cards }
@@ -42,24 +42,24 @@ describe Game do
       specify { should_not == Game::SORTED_DECK }
     end
 
-    context 'player2 should move' do
+    context 'when player2 should move' do
       before(:each) {
         start_deck = Game::SORTED_DECK.take(12)
         start_deck.push start_deck.shift
         @game = Game.create_game(start_deck)
       }
-      specify { subject.trump.should == :Spade }
-      specify { subject.current_move.should == :player2 }
+      its(:trump) { should == :Spade }
+      its(:current_move) { should == :player2 }
     end
 
-    context 'player1 should move' do
+    context 'when player1 should move' do
       before(:each) {
         start_deck = Game::SORTED_DECK.take(12)
         start_deck.push start_deck.delete(Card.new(:Spade, :'7'))
         @game = Game.create_game(start_deck)
       }
-      specify { subject.trump.should == :Spade }
-      specify { subject.current_move.should == :player1 }
+      its(:trump) { should == :Spade }
+      its(:current_move) { should == :player1 }
     end
 
 
@@ -81,8 +81,8 @@ describe Game do
           @card = @game.player1_cards[0]
           @result = @game.put(@card)
         }
-        specify { subject.player1_cards.should_not include(@card) }
-        specify { subject.table.should include(@card) }
+        its(:player1_cards) { should_not include(@card) }
+        its(:table) { should include(@card) }
         specify { @result.should be_true }
         it_behaves_like 'listener with events' do
           let(:items) { {:game => @game, :card => @card, :event => :put} }
@@ -126,7 +126,7 @@ describe Game do
         @game.put(@game.player2_cards.last)
         @listener.clear
       end
-      specify { @game.current_move.should == :player2 }
+      its(:current_move) { should == :player2 }
 
       context "correct card" do
         # Verifying preconditions conditions
@@ -190,12 +190,11 @@ describe Game do
           @card_on_table = @game.table.card_to_beat
           @game.take
         }
-        subject { @game }
-        specify { @game.player1_cards.should include(@card_on_table) }
-        specify { @game.current_move.should == :player2 }
+        its(:player1_cards) { should include(@card_on_table) }
+        its(:current_move) { should == :player2 }
         specify { should have(6).player2_cards }
         specify { should have(7).player1_cards }
-        specify { @game.table.should be_empty }
+        its(:table) { should be_empty }
       end
 
       it "puts all cards to discarded" do
