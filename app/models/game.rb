@@ -54,7 +54,11 @@ class Game
 
 
   def beat(beating)
-    @hands[current_defense].beat(beating, table)
+    if @hands[current_defense].beat(beating, table)
+      changed
+      notify_observers :event => :beat, :card => beating, :game => self
+      true
+    end
   end
 
   def to_s

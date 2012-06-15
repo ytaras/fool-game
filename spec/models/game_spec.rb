@@ -6,10 +6,29 @@ describe Game do
     @game = Game.create_game :listener => @listener
   end
 
+  shared_examples 'empty listener' do
+    context do
+      subject { @listener }
+      specify { should be_empty }
+    end
+  end
+
+  shared_examples "listener with events" do
+    specify {
+      if items.instance_of?(Array)
+        @listener.items.should == items
+      else
+        @listener.items.should == [items]
+      end
+    }
+  end
+
   subject { @game }
 
   describe "when game starts" do
-
+    it_behaves_like 'listener with events' do
+      let(:items) { {:game => @game, :event => :next_move} }
+    end
     specify { subject.table.should be_empty }
     specify { subject.discarded.should be_empty }
     specify { should have(36 - 6 - 6).deck }
@@ -43,6 +62,7 @@ describe Game do
       specify { subject.current_move.should == :player1 }
     end
 
+
     context 'with listener' do
       subject { @listener }
       specify { should have(1).items }
@@ -53,12 +73,7 @@ describe Game do
 
   describe "when in game" do
     describe "when trying to put" do
-      shared_examples 'empty listener' do
-        context do
-          subject { @listener }
-          specify { should be_empty }
-        end
-      end
+
       context "correct card" do
         before(:each) {
           @listener.clear
@@ -69,10 +84,8 @@ describe Game do
         specify { subject.player1_cards.should_not include(@card) }
         specify { subject.table.should include(@card) }
         specify { @result.should be_true }
-        context do
-          subject { @listener }
-          specify { should have(1).items }
-          specify { should include :game => @game, :card => @card, :event => :put }
+        it_behaves_like 'listener with events' do
+          let(:items) { {:game => @game, :card => @card, :event => :put} }
         end
       end
       context "card not from hand" do
@@ -104,29 +117,36 @@ describe Game do
       end
     end
 
-    describe "beat" do
+    describe "when trying to put" do
       before(:each) do
-        @game = Game.new(Array.new(Game::SORTED_DECK))
+        @game = Game.create_game Array.new(Game::SORTED_DECK)
       end
+      specify { @game.current_move.should == :player2 }
 
-      it "player2 should start" do
-        @game.current_move.should == :player2
-      end
+      context "correct card" do
+        before(:each) {
+          start_deck = Array.new(Game::SORTED_DECK).take(12)
+          start_deck.push start_deck.shift
+          @game = Game.create_game :deck => start_deck, :listener => @listener
+          @game.put(@game.player2_cards.last)
+        }
+        # Verifying preconditions conditions
+        its(:trump) { should == :Spade }
+        specify { subject.player1_cards[0].should be_beats(subject.table.card_to_beat) }
 
-      it "player1 should be able to beat" do
-        start_deck = Array.new(Game::SORTED_DECK).take(12)
-        start_deck.push start_deck.shift
-        @game = Game.new(start_deck)
-
-        # Verifying starting conditions
-        @game.trump.should == :Spade
-        @game.player1_cards[0].should be_beats(@game.player2_cards.last)
-
-        @game.put(@game.player2_cards.last)
-        beating_card = @game.player1_cards.last
-        @game.beat(beating_card)
-        @game.player1_cards.should_not include(beating_card)
-        @game.table.should include(beating_card)
+        context do
+          before(:each) {
+            @beating_card = @game.player1_cards.last
+            @listener.clear
+            @result = @game.beat(@beating_card)
+          }
+          specify { @result.should be_true }
+          its(:player1_cards) { should_not include(@beating_card) }
+          its(:table) { should include(@beating_card) }
+          it_behaves_like 'listener with events' do
+            let(:items) { {:game => @game, :card => @beating_card, :event => :beat} }
+          end
+        end
       end
 
       it "does nothing on wrong params" do
