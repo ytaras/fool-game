@@ -40,7 +40,11 @@ class Game
 
   def put(card)
     cards = @hands[current_move]
-    cards.put(card, table)
+    if cards.put(card, table)
+      changed
+      notify_observers :event => :put, :card => card, :game => self
+      true
+    end
   end
 
   def take

@@ -9,5 +9,6 @@ describe LogObserver do
       subject.clear
       should have(0).items
     }
+    specify { should include(0, 1, 2) }
   end
 end

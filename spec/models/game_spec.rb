@@ -2,11 +2,13 @@ require 'spec_helper'
 
 describe Game do
   before(:each) do
-    @game = Game.create_game
+    @listener = LogObserver.new
+    @game = Game.create_game :listener => @listener
   end
 
+  subject { @game }
+
   describe "game start" do
-    subject { @game }
 
     specify { subject.table.should be_empty }
     specify { subject.discarded.should be_empty }
@@ -42,24 +44,29 @@ describe Game do
     end
 
     context 'with listener' do
-      before(:each) {
-        @listener = LogObserver.new
-        @game = Game.create_game :listener => @listener
-      }
       subject { @listener }
       specify { should have(1).items }
+      specify { should include :game => @game, :event => :next_move }
     end
 
   end
 
-  describe "in game" do
-    describe "put" do
-      it "allow to put card on table" do
-        @game.stub(:current_move => :player1)
-        card = @game.player1_cards[0]
-        @game.put(card)
-        @game.player1_cards.should_not include(card)
-        @game.table.should include(card)
+  describe "when in game" do
+    describe :put do
+      context "when correct card" do
+        before(:each) {
+          @listener.clear
+          @game.stub(:current_move => :player1)
+          @card = @game.player1_cards[0]
+          @game.put(@card)
+        }
+        specify { subject.player1_cards.should_not include(@card) }
+        specify { subject.table.should include(@card) }
+        context do
+          subject { @listener }
+          specify { should have(1).items }
+          specify { should include :game => @game, :card => @card, :event => :put }
+        end
       end
 
       it "does nothing on wrong card" do
