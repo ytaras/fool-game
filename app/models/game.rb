@@ -1,10 +1,18 @@
+require 'observer'
+
 class Game
   include ConstantsHelper::GameConstants
-  # TODO Refactor - separate out few classes, probably table and hand
+  include Observable
 
-  def self.create_game(starting_deck = nil)
-    starting_deck = SORTED_DECK.shuffle unless starting_deck
-    Game.new(starting_deck)
+  def self.create_game(options = {})
+    if options.is_a?(Hash)
+      starting_deck = options[:deck]
+    else
+      starting_deck = options
+      options = {}
+    end
+    starting_deck ||= SORTED_DECK.shuffle
+    Game.new(starting_deck, options)
   end
 
   attr_accessor :current_move
@@ -16,51 +24,56 @@ class Game
   delegate :cards, :to => :table, :prefix => :table
   delegate :available, :to => :table
 
-  def initialize(starting_deck)
+  def initialize(starting_deck, options = {})
     @deck = Deck.new(starting_deck)
     @hands = {:player1 => Hand.new, :player2 => Hand.new}
     @table = Table.new
+    @table.trump = trump
     @discarded = []
+    add_observer options[:listener] unless options[:listener].nil?
     next_move
   end
 
   def pass
-    table_cards.each { |e| @discarded.push e }
+    changed
+    notify_observers :event => :dismiss, :cards => table.cards, :game => self
+    table.cards.each { |e| @discarded.push e }
     table.clear
     next_move
   end
 
   def put(card)
     cards = @hands[current_move]
-    return unless table.empty? || available.include?(card.card)
-    table.put(card) if cards.delete(card)
+    if cards.put(card, table)
+      changed
+      notify_observers :event => :put, :card => card, :game => self
+      true
+    end
   end
 
   def take
-    cards = @hands[current_defense]
-    cards.add table_cards
-    table.clear
+    changed
+    notify_observers :event => :take, :cards => table.cards, :player => current_defense, :game => self
+    @hands[current_defense].take(table)
     next_move(false)
   end
 
 
   def beat(beating)
-    # TODO Move check logic to table
-    cards = @hands[current_defense]
-    return unless @table.move == :defense
-    to_beat = @table.card_to_beat
-    if beating.beats?(to_beat, trump) && cards.delete(beating)
-      @table.beat beating
+    if @hands[current_defense].beat(beating, table)
+      changed
+      notify_observers :event => :beat, :card => beating, :game => self
+      true
     end
   end
 
   def to_s
     "" "
 		Game
-			Deck #{deck_cards}
+			Deck #{deck.cards}
 			Player1 #{player1_cards}
 			Player2 #{player2_cards}
-			Table #{table}
+			Table #{table.cards}
 			Trump #{trump_card}
 			Current move #{current_move}
     " ""
@@ -78,11 +91,7 @@ class Game
   private
 
   def draw_cards(player)
-    hand = @hands[player]
-    cards_to_draw = 6 - hand.size
-    if cards_to_draw > 0
-      hand.add deck.draw(cards_to_draw)
-    end
+    @hands[player].draw(@deck)
   end
 
   def smallest_trump(player)
@@ -101,15 +110,7 @@ class Game
     draw_cards(:player1)
     draw_cards(:player2)
 
-    if player1_cards.empty?
-      if player2_cards.empty?
-        @winner = :none
-      else
-        @winner = :player1
-      end
-    elsif player2_cards.empty?
-      @winner = :player2
-    end
+    return if is_game_end
 
     if @current_move.nil?
       p1_trump = smallest_trump(:player1)
@@ -126,6 +127,27 @@ class Game
     elsif turn
       @current_move = current_defense
     end
+
+    changed
+    notify_observers :event => :next_move, :game => self
+  end
+
+  def is_game_end
+    p1 = @hands[:player1].empty?
+    p2 = @hands[:player2].empty?
+    return false unless p1 || p2
+    if p1
+      if p2
+        @winner = :none
+      else
+        @winner = :player1
+      end
+    elsif p2
+      @winner = :player2
+    end
+    changed
+    notify_observers :event => :end, :game => self, :winner => winner
+    true
   end
 
 end

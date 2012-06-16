@@ -20,17 +20,51 @@ describe Hand do
     specify { subject.should be_empty }
   end
 
-  describe :add do
-    context "add one item" do
-      before(:each) { subject.add(Hand::SORTED_DECK.last) }
-      specify { subject.should have(7).items }
-      specify { subject.cards.last.should == Deck::SORTED_DECK.last }
+  context 'when put on table' do
+    before(:each) {
+      @table = Table.new
+      @table.trump = :Heart
+      @result = subject.put(subject[0], @table)
+    }
+    specify { @result.should be_true }
+    specify { @table.should have(1).cards }
+    specify { should have(5).cards }
+    specify { lambda {
+      subject.put(Card.new(:Clubs, :'9'), @table)
+    }.should_not change { @table.cards } }
+  end
+
+  context 'when attacking card present' do
+    before(:each) {
+      @hand1 = Hand.new([
+                            Card.new(:Hearts, :'10'),
+                        ])
+      @hand2 = Hand.new([
+                            Card.new(:Hearts, :Jack),
+                            Card.new(:Spade, :Ace),
+                        ])
+      @table = Table.new
+      @hand1.put(@hand1.cards.first, @table)
+    }
+
+    context 'when beat with correct card' do
+      before(:each) {
+        @beat_card = @hand2.cards.first
+        @result = @hand2.beat(@beat_card, @table)
+      }
+      specify { @table.should have(2).cards }
+      specify { @result.should be_true }
+      specify { @hand2.should_not include(@beat_card) }
     end
-    context "add few item" do
-      before(:each) { subject.add(Hand::SORTED_DECK.last(3)) }
-      specify { subject.should have(9).items }
-      specify { subject.cards.last(3).should == Deck::SORTED_DECK.last(3) }
-      specify { subject.cards.first(6).should == Deck::SORTED_DECK.first(6) }
+    context 'when beat with incorrect card' do
+      before(:each) {
+        @beat_card = @hand2.cards[1]
+        @result = @hand2.beat(@beat_card, @table)
+      }
+      specify { @table.should have(1).cards }
+      specify { @result.should be_false }
+      specify { @hand2.should include(@beat_card) }
+
     end
   end
 
@@ -65,6 +99,36 @@ describe Hand do
       specify { subject.beats(Card.new(:Hearts, :'7'), :Club).should have(3).items }
       specify { subject.beats(Card.new(:Hearts, :'7'), :Hearts).should have(1).items }
       specify { subject.beats(Card.new(:Hearts, :Jack), :Hearts).should be_empty }
+    end
+
+    describe :draw do
+      context "when enough cards" do
+        before(:each) {
+          @deck = Deck.new(Deck::SORTED_DECK.take(3))
+          subject.draw(@deck)
+        }
+        specify { should have(6).cards }
+        specify { @deck.should have(1).cards }
+      end
+      context "when no enough cards" do
+        before(:each) {
+          @deck = Deck.new(Deck::SORTED_DECK.take(1))
+          subject.draw(@deck)
+        }
+        specify { should have(5).cards }
+        specify { @deck.should have(0).cards }
+      end
+    end
+
+    describe :take do
+      before(:each) {
+        @table = Table.new
+        @table.put(Deck::SORTED_DECK.take(5))
+        subject.take(@table)
+      }
+
+      specify { should have(4 + 5).cards }
+      specify { @table.should be_empty }
     end
   end
 

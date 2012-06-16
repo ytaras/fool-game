@@ -6,7 +6,7 @@ describe Deck do
   it "not equal to sorted deck" do
     subject.cards.should_not == Deck::SORTED_DECK
   end
-  specify { subject.length.should == 36 }
+  specify { subject.size.should == 36 }
   describe :trump do
     specify { subject.trump.should == subject.cards.last.suit }
     specify { subject.trump_card.should == subject.cards.last }

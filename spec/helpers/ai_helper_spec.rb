@@ -6,14 +6,17 @@ describe AiHelper do
   before(:each) do
     @game = helper.create_game
   end
-  it "creates AI game" do
-    @game.should_not == nil
-  end
 
-  it "throws least not-trump card on a table if starts" do
-    @game = helper.create_game(Array.new(Game::SORTED_DECK))
-    @game.current_move.should == :player2
-    @game.table.should include(Card.new(:Heart, :"6"))
+  its(:count_observers) { should_not == 0 }
+
+  subject { @game }
+
+  context "when game starts" do
+    before(:each) {
+      @game = helper.create_game(Array.new(Game::SORTED_DECK))
+    }
+    its(:current_move) { should == :player2 }
+    its(:table) { should include(Card.new(:Heart, :"6")) }
   end
 
   it "should beat with least available card" do
@@ -22,6 +25,7 @@ describe AiHelper do
       beat = Card.new(p2suit, p2card)
       beat.should be_beats(put, @game.trump)
       @game.put(put)
+      @game.table.cards.should include(put)
       @game.table.cards.should include(beat)
     end
 
@@ -81,14 +85,6 @@ describe AiHelper do
     verify_and_beat(:Diamond, :"8", :Diamond, :"9")
     verify_and_beat(:Heart, :"9", :Heart, :Ace)
     verify_and_beat(:Spade, :"7", :Spade, :Ace)
-    @game.current_move.should == :player1
-  end
-
-  describe AiHelper::AiGame do
-    subject { @game }
-    specify { @game.trump_card.should_not be_nil }
-    specify { @game.deck.should == @game.game.deck.length }
-    specify { @game.opponent.should == @game.game.player1_cards.size }
-    specify { @game.player_move.should == (@game.current_move == :player1) }
+    @game.winner.should == :player2
   end
 end
