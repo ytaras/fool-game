@@ -12,6 +12,14 @@ describe GameController do
       response.should redirect_to new_user_session_path
     end
   end
+
+  shared_examples 'game structure' do
+    context do
+      subject { ActiveSupport::JSON.decode(response.body)['game'] }
+      its(:keys) { should include('table', 'deck', 'cards', 'trumpCard', 'opponent', 'myMove') }
+      specify { should have(6).items }
+    end
+  end
   describe :play do
     include_examples "protected", :play, :get
 
@@ -31,11 +39,7 @@ describe GameController do
       }
       subject { response }
       its(:status) { should == 200 }
-      context do
-        subject { ActiveSupport::JSON.decode(response.body)['game'] }
-        its(:keys) { should include('table', 'deck', 'cards', 'trumpCard', 'opponent', 'myMove') }
-        specify { should have(6).items }
-      end
+      include_examples 'game structure'
     end
   end
 
@@ -56,6 +60,22 @@ describe GameController do
         post :move, :format => 'json', :move => 'put', :card => {:suit => 'A', :card => 'B'}
         response.status.should == 400
         ActiveSupport::JSON.decode(response.body).should have_key('error')
+      end
+
+      context 'when player first move' do
+        before(:each) {
+          session[:game] = controller.create_game Array.new(Game::SORTED_DECK)
+          post :move, :format => 'json', :move => 'put', :card => {:suit => 'Heart', :card => '6'}
+        }
+        subject { ActiveSupport::JSON.decode(response.body) }
+        pending do
+          its(['changes']) { should contain('table') }
+        end
+        include_examples 'game structure'
+      end
+
+      context 'when ai first move' do
+
       end
 
       it "puts card on a table" do
