@@ -67,17 +67,18 @@ class Game
     end
   end
 
-  def to_s
-    "" "
-		Game
-			Deck #{deck.cards}
-			Player1 #{player1_cards}
-			Player2 #{player2_cards}
-			Table #{table.cards}
-			Trump #{trump_card}
-			Current move #{current_move}
-    " ""
-  end
+  #
+  #def to_s
+  #  "" "
+  #Game
+  #	Deck #{deck.cards}
+  #	Player1 #{player1_cards}
+  #	Player2 #{player2_cards}
+  #	Table #{table.cards}
+  #	Trump #{trump_card}
+  #	Current move #{current_move}
+  #  " ""
+  #end
 
   def player1
     @hands[:player1]

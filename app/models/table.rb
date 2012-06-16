@@ -2,48 +2,44 @@ class Table
   include ConstantsHelper::GameConstants
 
   delegate :empty?, :include?, :to => :cards
-  delegate :clear, :to => :@table
-  attr_reader :move, :table
+  delegate :clear, :to => :@stacks
+  attr_reader :move, :stacks
   attr_accessor :trump
 
   def initialize
-    @table = []
+    @stacks = []
     @move = :attack
   end
 
-  def stacks
-    @table
-  end
-
   def available
-    @table.flatten.map { |e| e.card }.uniq
+    @stacks.flatten.map { |e| e.card }.uniq
   end
 
   def put(card)
     return false unless move == :attack
     return false unless empty? || available.include?(card.card)
-    @table << [card]
+    @stacks << [card]
     @move = :defense
   end
 
   def beat(card)
     return false unless move == :defense
     return false unless card.beats?(card_to_beat, trump)
-    @table.last << card
+    @stacks.last << card
     @move = :attack
   end
 
   def cards
-    @table.flatten
+    @stacks.flatten
   end
 
   def stacks_count
-    @table.size
+    @stacks.size
   end
 
   def card_to_beat
-    return nil if @table.empty?
-    @table.last[0]
+    return nil if @stacks.empty?
+    @stacks.last[0]
   end
 
 end
