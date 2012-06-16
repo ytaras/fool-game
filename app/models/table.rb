@@ -3,12 +3,16 @@ class Table
 
   delegate :empty?, :include?, :to => :cards
   delegate :clear, :to => :@table
-  attr_reader :move
+  attr_reader :move, :table
   attr_accessor :trump
 
   def initialize
     @table = []
     @move = :attack
+  end
+
+  def stacks
+    @table
   end
 
   def available

@@ -4,8 +4,11 @@ node :cards do
   end
 end
 node :table do
-  @game.table.cards.map do |card|
-    partial("game/card", :object => card)
+  @game.table.stacks.map do |stack|
+    # TODO Learn RABL collections
+    stack.map do |card|
+      partial("game/card", :object => card)
+    end
   end
 end
 node :deck do
