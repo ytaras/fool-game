@@ -1,68 +1,54 @@
 module AiHelper
   def create_game(cards = nil)
-    AiGame.new(Game::create_game(cards))
+    Game::create_game :listener => create_ai_listener, :deck => cards
   end
 
-  class AiGame
+  def create_ai_listener
+    AiListener.new
+  end
 
-    delegate :current_move, :table, :trump, :trump_card, :player1_cards, :to => :game
-
-    attr_reader :game
-
-    def deck
-      @game.deck.length
+  class AiListener
+    def update(event)
+      event_name = event[:event]
+      send event_name, event if event_name && respond_to?(event_name)
     end
 
-    def opponent
-      @game.player1_cards.size
+
+    def next_move(event)
+      return unless my_move(event)
+      do_attack event[:game]
     end
 
-    def put(card)
-      if @game.put(card) && !my_move
-        do_my_turn
-      end
+    def put(event)
+      return if my_move(event)
+      do_defense event[:game]
     end
 
-    def beat(card)
-      # TODO Find out how to do this with metaprogramming
-      @game.beat(card)
-      do_my_turn if my_move
-    end
-
-    def initialize(game)
-      @game = game
-      do_my_turn if my_move
-    end
-
-    def player_move
-      !my_move
+    def beat(event)
+      return unless my_move(event)
+      do_attack event[:game]
     end
 
     private
-    def my_move
-      @game.current_move == :player2
+
+    def my_move(event)
+      event[:game].current_move == :player2
     end
 
-    def do_my_turn
-      if current_move == :player2
-        do_attack()
-      else
-        do_defense()
-      end
-    end
-
-    def do_defense
-      raise "Trying to perform defense at empty table" if table.empty?
-      card_to_beat = table.card_to_beat
-      beating = @game.player2.beats(card_to_beat, trump).first
+    def do_defense(game)
+      raise "Trying to perform defense at empty table" if game.table.empty?
+      card_to_beat = game.table.card_to_beat
+      beating = game.player2.beats(card_to_beat, game.trump).first
       if beating.nil?
         game.take
       else
-        beat(beating)
+        game.beat(beating)
       end
     end
 
-    def do_attack
+    def do_attack(game)
+      non_trumps = game.player2.none_of(game.trump)
+      trumps = game.player2.all_of(game.trump)
       card_sort = lambda { |x, y|
         x.card_number <=> y.card_number
       }
@@ -71,31 +57,19 @@ module AiHelper
         game.available.include?(x.card)
       }
 
-      if table.empty?
-        # I should start
-        card_to_put = non_trumps.sort(&card_sort).first
-        card_to_put = trumps.sort(&card_sort).first if card_to_put.nil?
-      else
-        card_to_put = non_trumps.select(&card_filter).sort(&card_sort).first
-        card_to_put = trumps.select(&card_filter).sort(&card_sort).first if card_to_put.nil?
+      unless game.table.empty?
+        non_trumps = non_trumps.select(&card_filter)
+        trumps = trumps.select(&card_filter)
       end
+
+      card_to_put = non_trumps.sort(&card_sort).first
+      card_to_put = trumps.sort(&card_sort).first if card_to_put.nil?
 
       if card_to_put.nil?
-        @game.pass
+        game.pass
       else
-        put(card_to_put)
+        game.put(card_to_put)
       end
     end
-
-    private
-
-    def non_trumps
-      game.player2.none_of(game.trump)
-    end
-
-    def trumps
-      game.player2.all_of(game.trump)
-    end
-
   end
 end

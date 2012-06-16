@@ -1,7 +1,7 @@
 class Deck
   include ConstantsHelper::GameConstants
 
-  delegate :items, :[], :length, :to => :cards
+  delegate :items, :[], :size, :to => :cards
   attr_reader :cards, :trump_card
 
   def initialize(cards = SORTED_DECK.shuffle)

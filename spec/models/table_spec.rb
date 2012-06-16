@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Table do
   subject { Table.new }
+  before(:each) { subject.trump = Table::SUITS.last }
   specify { should be_empty }
 
 
@@ -9,6 +10,7 @@ describe Table do
     specify { subject.move.should == :attack }
     specify { should have(0).cards }
     specify { subject.stacks_count == 0 }
+    specify { subject.beat(Card.new(:Heart, :'6')).should be_false }
     describe :put do
       specify { subject.put(Table::SORTED_DECK.first).should be_true }
     end
@@ -20,7 +22,8 @@ describe Table do
     specify { should have(1).cards }
     specify { subject.stacks_count == 1 }
     specify { should include(Table::SORTED_DECK.first) }
-    context do
+    specify { subject.beat(Table::SORTED_DECK[10]).should be_false }
+    context "when trying to attack during defense" do
       before(:each) { @result = subject.put(Table::SORTED_DECK[1]) }
       specify { @result.should be_false }
       specify { should have(1).cards }
@@ -33,6 +36,9 @@ describe Table do
       specify { should have(2).cards }
       specify { subject.stacks_count == 1 }
       specify { should include(Table::SORTED_DECK[1]) }
+      specify { subject.move.should == :attack }
+      specify { subject.put(Table::SORTED_DECK[2]).should be_false }
+      specify { subject.put(Card.new(:Heart, subject.available.first)).should be_true }
     end
   end
 
@@ -46,12 +52,13 @@ describe Table do
   end
 
   describe :available do
-    before(:all) {
-      subject.put Card.new(:Heart, :"8")
-      subject.beat Card.new(:Heart, :"9")
+    specify {
+      subject.put Card.new(:Heart, :"7")
+      subject.beat Card.new(:Heart, :"8")
       subject.put Card.new(:Club, :"8")
-      subject.beat Card.new(:Club, :"10")
+      subject.beat Card.new(:Club, :"9")
+      subject.available.should =~ [:"7", :"8", :'9']
     }
-    specify { subject.available.should =~ [:"9", :"8", :"10"] }
+
   end
 end

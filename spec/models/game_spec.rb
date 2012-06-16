@@ -2,167 +2,250 @@ require 'spec_helper'
 
 describe Game do
   before(:each) do
-    @game = Game.create_game
+    @listener = LogObserver.new
+    @game = Game.create_game :listener => @listener
   end
 
-  describe "game start" do
-    it "deck contains all cards" do
-      @game.should have(36 - 6 - 6).deck
-      all_cards = @game.deck.cards + @game.player1.cards + @game.player2.cards
-      all_cards.should =~ Game::SORTED_DECK
-      all_cards.should_not == Game::SORTED_DECK
-    end
-
-    it "table is empty" do
-      @game.table.should be_empty
-    end
-
-    it "discarded is empty" do
-      @game.discarded.should be_empty
-    end
-
-    it "gives first turn to a gamer with lowest trump" do
-      start_deck = Game::SORTED_DECK.take(12)
-      start_deck.push start_deck.shift
-      @game = Game.create_game(start_deck)
-      @game.trump.should == :Spade
-      @game.current_move.should == :player2
-    end
-
-    it "each player 6 cards each on start" do
-      @game.should have(6).player1_cards
-      @game.should have(6).player2_cards
+  shared_examples 'empty listener' do
+    context do
+      subject { @listener }
+      specify { should be_empty }
     end
   end
 
-  describe "in game" do
-    describe "put" do
-      it "allow to put card on table" do
-        @game.stub(:current_move => :player1)
-        card = @game.player1_cards[0]
-        @game.put(card)
-        @game.player1_cards.should_not include(card)
-        @game.table.should include(card)
+  shared_examples "listener with events" do
+    specify {
+      if items.instance_of?(Array)
+        @listener.items.should == items
+      else
+        @listener.items.should == [items]
       end
+    }
+  end
 
-      it "does nothing on wrong card" do
-        @game.stub(:current_move => :player1)
-        card = @game.player2_cards[0]
-        @game.put(card).should be_false
-        @game.table.should be_empty
+  subject { @game }
+
+  describe "when game starts" do
+    it_behaves_like 'listener with events' do
+      let(:items) { {:game => @game, :event => :next_move} }
+    end
+    its(:table) { should be_empty }
+    its(:discarded) { should be_empty }
+    its(:winner) { should be_nil }
+    specify { should have(36 - 6 - 6).deck }
+    specify { should have(6).player1_cards }
+    specify { should have(6).player2_cards }
+
+    context do
+      before(:each) { @all_cards = @game.deck.cards + @game.player1.cards + @game.player2.cards }
+      subject { @all_cards }
+      specify { should =~ Game::SORTED_DECK }
+      specify { should_not == Game::SORTED_DECK }
+    end
+
+    context 'when player2 should move' do
+      before(:each) {
+        start_deck = Game::SORTED_DECK.take(12)
+        start_deck.push start_deck.shift
+        @game = Game.create_game(start_deck)
+      }
+      its(:trump) { should == :Spade }
+      its(:current_move) { should == :player2 }
+    end
+
+    context 'when player1 should move' do
+      before(:each) {
+        start_deck = Game::SORTED_DECK.take(12)
+        start_deck.push start_deck.delete(Card.new(:Spade, :'7'))
+        @game = Game.create_game(start_deck)
+      }
+      its(:trump) { should == :Spade }
+      its(:current_move) { should == :player1 }
+    end
+
+
+    context 'with listener' do
+      subject { @listener }
+      specify { should have(1).items }
+      specify { should include :game => @game, :event => :next_move }
+    end
+
+  end
+
+  describe "when in game" do
+    describe "when trying to put" do
+
+      context "correct card" do
+        before(:each) {
+          @listener.clear
+          @game.stub(:current_move => :player1)
+          @card = @game.player1_cards[0]
+          @result = @game.put(@card)
+        }
+        its(:player1_cards) { should_not include(@card) }
+        its(:table) { should include(@card) }
+        specify { @result.should be_true }
+        it_behaves_like 'listener with events' do
+          let(:items) { {:game => @game, :card => @card, :event => :put} }
+        end
       end
+      context "card not from hand" do
+        before(:each) {
+          @listener.clear
+          @game.stub(:current_move => :player1)
+          @card = @game.player2_cards[0]
+          @result = @game.put(@card)
+        }
+        include_examples 'empty listener'
+        specify { @result.should be_false }
+        its(:table) { should be_empty }
+      end
+      context "not allowed card if" do
+        before(:each) {
+          @game = Game.create_game :deck => Array.new(Game::SORTED_DECK), :listener => @listener
+          @first_card = @game.player2_cards.last
+          @game.put(@first_card)
+          @second_card = @game.player2_cards.last
+          @listener.clear
+          @result = @game.put(@second_card)
+        }
+        include_examples 'empty listener'
+        # Verify precondition
+        specify { @second_card.card.should_not == @first_card.card }
 
-      it "dont allow to put card if not same card" do
-        @game = Game.new(Array.new(Game::SORTED_DECK))
-        first_card = @game.player2_cards.last
-        @game.put(first_card).should be_true
-        second_card = @game.player2_cards.last
-        second_card.card.should_not == first_card.card
-        @game.put(second_card).should be_false
-
-        @game.table.cards.should == [first_card]
-        @game.player2_cards.should include(second_card)
+        its("table.cards") { should == [@first_card] }
+        its(:player2_cards) { should include(@second_card) }
       end
     end
 
-    describe "table" do
-      it "allows only cards which are present" do
-      end
-    end
-
-    describe "beat" do
+    describe "when trying to beat" do
       before(:each) do
-        @game = Game.new(Array.new(Game::SORTED_DECK))
-      end
-
-      it "player2 should start" do
-        @game.current_move.should == :player2
-      end
-
-      it "player1 should be able to beat" do
+        # TODO Move Game creation to helper
         start_deck = Array.new(Game::SORTED_DECK).take(12)
         start_deck.push start_deck.shift
-        @game = Game.new(start_deck)
-
-        # Verifying starting conditions
-        @game.trump.should == :Spade
-        @game.player1_cards[0].should be_beats(@game.player2_cards.last)
-
+        @game = Game.create_game :deck => start_deck, :listener => @listener
         @game.put(@game.player2_cards.last)
-        beating_card = @game.player1_cards.last
-        @game.beat(beating_card)
-        @game.player1_cards.should_not include(beating_card)
-        @game.table.should include(beating_card)
+        @listener.clear
+      end
+      its(:current_move) { should == :player2 }
+
+      context "correct card" do
+        # Verifying preconditions conditions
+        its(:trump) { should == :Spade }
+        specify { subject.player1_cards[0].should be_beats(subject.table.card_to_beat) }
+
+        context do
+          before(:each) {
+            @beating_card = @game.player1_cards.last
+            @result = @game.beat(@beating_card)
+          }
+          specify { @result.should be_true }
+          its(:player1_cards) { should_not include(@beating_card) }
+          its(:table) { should include(@beating_card) }
+          it_behaves_like 'listener with events' do
+            let(:items) { {:game => @game, :card => @beating_card, :event => :beat} }
+          end
+        end
       end
 
-      it "does nothing on wrong params" do
-        beating_card = @game.player1_cards.last
-        @game.beat(beating_card)
-        @game.table.should be_empty
-        @game.player1_cards.should include(beating_card)
+      context "not existing card" do
+        before(:each) {
+          @beating_card = @game.player2_cards.last
+          @result = @game.beat(@beating_card)
+        }
+        its('table.cards') { should_not include(@beating_card) }
+        its(:player2_cards) { should include(@beating_card) }
+        specify { @result.should be_false }
+        include_examples 'empty listener'
       end
 
-      it "does nothing if card cant beat" do
-        @game.put(@game.player2_cards[0])
-        # Verify if we cant beat
-        card_on_table = @game.table.card_to_beat
-        beating_card = @game.player1_cards.last
-        beating_card.should_not be_beats(card_on_table)
-        @game.beat(beating_card)
-        @game.player1_cards.should include(beating_card)
-        @game.table.card_to_beat.should == card_on_table
+      context "not beating card" do
+        before(:each) {
+          start_deck = Array.new(Game::SORTED_DECK).take(12)
+          @game = Game.create_game :deck => start_deck, :listener => @listener
+          @game.put(@game.player2_cards.last)
+          @listener.clear
+          @saved_to_beat = @game.table.card_to_beat
+          @beating = @game.player1_cards.last
+        }
+        specify { @beating.should_not be_beats(@saved_to_beat) }
+        context do
+          before(:each) { @result = @game.beat(@beating) }
+          specify { @result.should be_false }
+          its(:player1_cards) { should include(@beating) }
+          its("table.card_to_beat") { should == @saved_to_beat }
+          its('table.cards') { should_not include(@beating) }
+          include_examples 'empty listener'
+        end
       end
     end
 
-    describe "end turn" do
-      before(:each) do
-        @game = Game.new(Array.new(Game::SORTED_DECK))
-      end
-
-      it "takes all cards from table to defending player" do
+    context "when take" do
+      before(:each) {
+        @game = Game.create_game :deck => Game::SORTED_DECK.dup, :listener => @listener
         @game.put(@game.player2_cards.last)
-        card_on_table = @game.table.card_to_beat
+        @card_on_table = @game.table.card_to_beat
+        @listener.clear
         @game.take
-        @game.player1_cards.should include(card_on_table)
-        @game.current_move.should == :player2
-        @game.should have(6).player2_cards
-        @game.should have(7).player1_cards
-        @game.table.should be_empty
+      }
+      its(:player1_cards) { should include(@card_on_table) }
+      its(:current_move) { should == :player2 }
+      specify { should have(6).player2_cards }
+      specify { should have(7).player1_cards }
+      its(:table) { should be_empty }
+      it_behaves_like 'listener with events' do
+        let(:items) { [
+            {:game => @game, :cards => [@card_on_table], :event => :take, :player => :player1},
+            {:game => @game, :event => :next_move}
+        ] }
       end
+    end
 
-      it "puts all cards to discarded" do
+    context "when pass" do
+      before(:each) {
         start_deck = Array.new(Game::SORTED_DECK).take(14).reverse
-        @game = Game.new(start_deck)
-        @game.player1_cards.last.should be_beats(@game.player2_cards.last)
-
+        @game = Game.create_game :deck => start_deck, :listener => @listener
         @game.put(@game.player2_cards.last)
         @game.beat(@game.player1_cards.last)
+        @table_cards = @game.table.cards
+        @listener.clear
         @game.pass
-        @game.should have(2).discarded
-        @game.table.should be_empty
-        @game.current_move.should == :player1
-        @game.should have(6).player1_cards
-        @game.should have(6).player2_cards
+      }
+      specify { should have(2).discarded }
+      its(:table) { should be_empty }
+      its(:current_move) { should == :player1 }
+      specify { should have(6).player1_cards }
+      specify { should have(6).player1_cards }
+      its(:current_move) { should == :player1 }
+      it_behaves_like 'listener with events' do
+        let(:items) { [
+            {:game => @game, :cards => @table_cards, :event => :dismiss},
+            {:game => @game, :event => :next_move}
+        ] }
       end
     end
 
-    describe "end game" do
-      it "game winner should be nil at start" do
-        @game.winner.should == nil
-      end
-
-      it "game ends when no cards are for any player" do
+    context "when no cards are for any player" do
+      before(:each) {
         start_deck = Array.new(Game::SORTED_DECK.take(7))
         start_deck.push start_deck.shift
-        @game = Game.new(start_deck)
+        @game = Game.create_game :deck => start_deck, :listener => @listener
         @game.should have(1).player2_cards
 
         @game.put(@game.player2_cards.last)
+        @listener.clear
+        @table_cards = @game.table.cards
         @game.take
-
-        @game.winner.should == :player2
+      }
+      its(:winner) { should == :player2 }
+      it_behaves_like 'listener with events' do
+        let(:items) { [
+            {:game => @game, :event => :take, :cards => @table_cards, :player => :player1},
+            {:game => @game, :event => :end, :winner => :player2}
+        ] }
       end
-
     end
+
   end
 end
+
