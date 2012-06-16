@@ -23,6 +23,20 @@ describe GameController do
       get :play
       assigns[:game].should === old_game
     end
+
+    context 'when get json' do
+      before(:each) {
+        login
+        get :play, :format => :json
+      }
+      subject { response }
+      its(:status) { should == 200 }
+      context do
+        subject { ActiveSupport::JSON.decode(response.body)['game'] }
+        its(:keys) { should include('table', 'deck', 'cards', 'trumpCard', 'opponent', 'myMove') }
+        specify { should have(6).items }
+      end
+    end
   end
 
   describe :move do

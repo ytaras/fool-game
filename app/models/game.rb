@@ -1,3 +1,5 @@
+require 'observer'
+
 class Game
   include ConstantsHelper::GameConstants
   include Observable
