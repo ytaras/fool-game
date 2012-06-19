@@ -68,8 +68,8 @@ describe GameController do
           post :move, :format => 'json', :move => 'put', :card => {:suit => 'Heart', :card => '6'}
         }
         subject { ActiveSupport::JSON.decode(response.body) }
-        pending do
-          its(['changes']) { should contain('table') }
+        pending 'waiting on logobserver' do
+          its(['changes']) { should include('table') }
         end
         include_examples 'game structure'
       end

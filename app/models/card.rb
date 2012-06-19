@@ -9,7 +9,7 @@ class Card
   def initialize(suit, card)
     @suit = suit
     @card = card
-    @card_number = Game::CARDS.index(@card)
+    @card_number = CARDS.index(@card)
   end
 
   def to_s

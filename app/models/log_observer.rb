@@ -10,11 +10,23 @@ class LogObserver
     @items << i
   end
 
+  def watch_diff(game)
+    raise 'block should be given' unless block_given?
+    @items.clear
+    game.add_observer self
+    yield game
+    game.delete_observer self
+    res = diff
+    puts @items.inspect
+    @items.clear
+    res
+  end
+
   def diff
     ret = {:table => {}}
     @items.each do |event|
       return unless event.is_a?(Hash)
-      case event[:action]
+      case event[:event]
         when :put
           ret[:table][:added] ||= []
           ret[:table][:added] << [event[:card]] unless event[:card].nil?
