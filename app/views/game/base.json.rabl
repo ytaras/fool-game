@@ -23,3 +23,8 @@ end
 node :trumpCard do
   partial("game/card", :object => @game.trump_card)
 end
+unless @changes.nil?
+  child @changes => :changes do
+
+  end
+end

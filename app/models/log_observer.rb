@@ -17,7 +17,6 @@ class LogObserver
     yield game
     game.delete_observer self
     res = diff
-    puts @items.inspect
     @items.clear
     res
   end

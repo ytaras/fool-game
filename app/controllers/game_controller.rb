@@ -20,7 +20,12 @@ class GameController < ApplicationController
 
   def move
     @game = create_or_load_game
-    @game.send params[:move].to_sym, parse_card(params[:card])
+    log_observer = LogObserver.new
+    changes = log_observer.watch_diff(@game) do
+      @game.send params[:move].to_sym, parse_card(params[:card])
+    end
+    # Workaround on a RABL
+    @changes = OpenStruct.new(changes)
     respond_to do |format|
       format.json
     end
