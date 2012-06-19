@@ -72,10 +72,32 @@ card_click: (card) ->
     success: (result) ->
       #      console.log(result)
     error: (result, status, errorThrown) ->
-      #      console.log result
+            console.log result
 
+take: ->
+  $.ajax
+    "type": "POST"
+    "url": "/game/move"
+    "data":
+      move: 'take'
+    success: (result) ->
+      #      console.log(result)
+    error: (result, status, errorThrown) ->
+            console.log result
+pass: ->
+  $.ajax
+    "type": "POST"
+    "url": "/game/move"
+    "data":
+      move: 'pass'
+    success: (result) ->
+      #      console.log(result)
+    error: (result, status, errorThrown) ->
+      console.log result
 installHandlers: ->
   $('#hand .card').click((event) -> GameHelper.card_click event.target)
+  $('.take').click((event) -> GameHelper.take)
+  $('.pass').click((event) -> GameHelper.pass)
 
 visible: (element, value) ->
   $(element)[if value then 'show' else 'hide']()

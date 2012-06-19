@@ -132,7 +132,25 @@ describe 'GameHelper', ->
           move: "beat"
           card: @game.cards[0]
 
-
+# TODO - Doesn't work but looks ok, probably some issue with spy
+  describe 'end turn', ->
+    beforeEach ->
+      spyOn($, "ajax").andCallFake (options) ->
+    describe 'take', ->
+      GameHelper.take
+      console.log $.ajax.mostRecentCall
+      options = $.ajax.mostRecentCall.args[0]
+      expect(options["url"]).toBe "/game/move"
+      expect(options["type"]).toBe "POST"
+      expect(options["data"]).toEqual
+        move: "take"
+    describe 'pass', ->
+      GameHelper.pass
+      options = $.ajax.mostRecentCall.args[0]
+      expect(options["url"]).toBe "/game/move"
+      expect(options["type"]).toBe "POST"
+      expect(options["data"]).toEqual
+        move: "pass"
   describe 'changes applier', ->
     beforeEach ->
       @result =

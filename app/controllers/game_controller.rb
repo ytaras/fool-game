@@ -3,7 +3,7 @@ class GameController < ApplicationController
   before_filter :authenticate_user!, :except => :index
   before_filter :validate_request, :only => :move
 
-  VALID_MOVES = [:put, :beat]
+  VALID_MOVES = [:put, :beat, :take, :pass]
 
   def index
   end
@@ -22,7 +22,12 @@ class GameController < ApplicationController
     @game = create_or_load_game
     log_observer = LogObserver.new
     @changes = log_observer.watch_diff(@game) do
-      @game.send params[:move].to_sym, parse_card(params[:card])
+      parsed_card = parse_card(params[:card])
+      if parsed_card.nil?
+        @game.send params[:move].to_sym
+      else
+        @game.send params[:move].to_sym, parsed_card
+      end
     end
     respond_to do |format|
       format.json
@@ -49,8 +54,7 @@ class GameController < ApplicationController
   end
 
   def parse_card(card)
-    card = Card.new(card[:suit].to_sym, card[:card].to_sym)
-
+    Card.new(card[:suit].to_sym, card[:card].to_sym) unless card.nil?
   end
 
 end
