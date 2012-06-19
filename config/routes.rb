@@ -5,6 +5,7 @@ FoolGame::Application.routes.draw do
 
   get 'game/play'
   post 'game/move'
+  get 'game/test'
   #mount JasmineRails::Engine => "/specs" unless Rails.env.production?
   # The priority is based upon order of creation:
   # first created -> highest priority.
