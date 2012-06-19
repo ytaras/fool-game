@@ -68,14 +68,31 @@ describe GameController do
           post :move, :format => 'json', :move => 'put', :card => {:suit => 'Heart', :card => '6'}
         }
         subject { ActiveSupport::JSON.decode(response.body) }
-        specify { assigns[:game].count_observers.should == 1 }
+
+        context do
+          subject { assigns[:game] }
+          specify { subject.table.stacks.first.size.should == 1 }
+        end
         # TODO Move to view spec
         its(['changes']) { should include('table') }
         include_examples 'game structure'
       end
 
       context 'when ai first move' do
-
+        before(:each) {
+          start_deck = Array.new(Game::SORTED_DECK).take(12)
+          start_deck.push start_deck.shift
+          session[:game] = controller.create_game start_deck
+          post :move, :format => 'json', :move => 'beat', :card => {:suit => 'Spade', :card => '7'}
+        }
+        context do
+          subject { assigns[:changes] }
+          its(["table"]) { should_not be_nil }
+          specify {
+            subject['table']['added'].should == [[nil, Card.new(:Spade, :'7')], [Card.new(:Heart, :'7')]]
+          }
+        end
+        include_examples 'game structure'
       end
 
       it "puts card on a table" do

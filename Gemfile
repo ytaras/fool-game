@@ -59,4 +59,5 @@ gem 'gon'
 
 # To use debugger
 #gem 'ruby-debug19', :require => 'ruby-debug'
-gem 'pry', :group => :development
+#gem 'pry', :group => :development
+gem 'pry-rails', :group => :development

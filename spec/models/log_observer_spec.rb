@@ -7,7 +7,7 @@ describe LogObserver do
   context do
     before(:each) { 3.times { |x| subject.update(x) } }
     specify { should have(3).items }
-    specify { should include(0, 1, 2) }
+    its('to_a') { should == [0, 1, 2] }
     specify { should_not be_empty }
     context 'when cleared' do
       before(:each) { subject.clear }
@@ -27,6 +27,7 @@ describe LogObserver do
     }
     subject { @observer }
     specify { should be_empty }
+    specify { @result[:table].should_not include(:added) }
     specify { @result[:table].should include(:removed => [@card]) }
   end
   context 'when logging game events' do

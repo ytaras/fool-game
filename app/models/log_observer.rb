@@ -1,5 +1,5 @@
 class LogObserver
-  delegate :clear, :include?, :empty?, :to => :items
+  delegate :clear, :include?, :empty?, :to_a, :to => :items
   attr_reader :items
 
   def initialize

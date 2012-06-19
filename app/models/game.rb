@@ -78,6 +78,22 @@ class Game
 
   private
 
+  # Running LogObserver first
+  def notify_observers(*arg)
+    if defined? @observer_state and @observer_state
+      if defined? @observer_peers
+        @observer_peers.select { |x| x.is_a? LogObserver }.each do |k, v|
+          k.send v, *arg
+        end
+        @observer_peers.select { |x| !x.is_a?(LogObserver) }.each do |k, v|
+          k.send v, *arg
+        end
+      end
+      @observer_state = false
+    end
+
+  end
+
   def draw_cards(player)
     @hands[player].draw(@deck)
   end
