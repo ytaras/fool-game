@@ -68,10 +68,9 @@ describe GameController do
           post :move, :format => 'json', :move => 'put', :card => {:suit => 'Heart', :card => '6'}
         }
         subject { ActiveSupport::JSON.decode(response.body) }
+        specify { assigns[:game].count_observers.should == 1 }
+        # TODO Move to view spec
         its(['changes']) { should include('table') }
-        specify {
-          should == ""
-        }
         include_examples 'game structure'
       end
 

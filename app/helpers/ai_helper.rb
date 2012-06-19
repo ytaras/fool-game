@@ -20,6 +20,7 @@ module AiHelper
     end
 
     def put(event)
+      puts "my_move: #{my_move(event)}"
       return if my_move(event)
       do_defense event[:game]
     end

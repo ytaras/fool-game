@@ -11,3 +11,5 @@ json.game do |json|
   json.opponent @game.player2_cards.size
   json.deck @game.deck.size
 end
+
+json.changes @changes
