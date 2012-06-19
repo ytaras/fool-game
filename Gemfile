@@ -42,7 +42,7 @@ group :development do
 end
 
 gem 'factory_girl_rails', :group => :test
-gem 'rabl'
+gem 'jbuilder'
 gem 'gon'
 
 # To use ActiveModel has_secure_password

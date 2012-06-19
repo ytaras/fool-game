@@ -10,7 +10,7 @@ class GameController < ApplicationController
 
   def play
     @game = create_or_load_game
-    gon.rabl
+    gon.jbuilder
 
     respond_to do |format|
       format.html
@@ -21,11 +21,9 @@ class GameController < ApplicationController
   def move
     @game = create_or_load_game
     log_observer = LogObserver.new
-    changes = log_observer.watch_diff(@game) do
+    @changes = log_observer.watch_diff(@game) do
       @game.send params[:move].to_sym, parse_card(params[:card])
     end
-    # Workaround on a RABL
-    @changes = OpenStruct.new(changes)
     respond_to do |format|
       format.json
     end
