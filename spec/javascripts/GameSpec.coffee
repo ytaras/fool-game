@@ -131,3 +131,60 @@ describe 'GameHelper', ->
         expect(options["data"]).toEqual
           move: "beat"
           card: @game.cards[0]
+
+
+  describe 'changes applier', ->
+    beforeEach ->
+      @result =
+        trumpCard:
+          suit: 'Heart'
+          card: 'Ace'
+        deck: 2
+        cards: [
+          {suit: 'Heart', card: '6'}
+          {suit: 'Spade', card: '7'}
+        ]
+        opponent: 3
+        myMove: true
+        table: [
+          [
+            {suit: 'Spade', card: '8'}
+            {suit: 'Spade', card: '9'}
+          ]
+          [
+            {suit: 'Heart', card: '9'}
+            {suit: 'Heart', card: '10'}
+          ]
+          [
+            {suit: 'Diamond', card: '9'}
+            {suit: 'Diamond', card: '10'}
+          ]
+          [
+            {suit: 'Spade', card: '8'},
+          ]
+        ]
+        changes:
+          table:
+            added: [
+              [ undefined, {suit: 'Heart', card: '10'} ]
+              [
+                {suit: 'Diamond', card: '9'}
+                {suit: 'Diamond', card: '10'}
+              ]
+              [
+                {suit: 'Spade', card: '8'}
+              ]
+            ]
+      jasmine.getFixtures().load('game.html')
+      GameHelper.loadData($('#gamefield'), @game)
+      GameHelper.applyChanges($('#gamefield'), @result)
+    it 'has result', ->
+      expect(@result).toBeDefined()
+      expect($('#table .cards-stack .card')).toExist()
+    it 'beats card on a table', ->
+      expect($("#table .cards-stack .defense-card.card.cards-hearts10")).toExist()
+    it 'adds attack card on a table', ->
+      expect($("#table .cards-stack .attack-card.card.cards-spades8")).toExist()
+    it 'adds full stack on a table', ->
+      expect($("#table .cards-stack .attack-card.card.cards-diamonds9")).toExist()
+      expect($("#table .cards-stack .defense-card.card.cards-diamonds10")).toExist()

@@ -11,6 +11,25 @@ createElement: (name, aClass, text) ->
   $(elem).text(text) if text?
   return elem
 
+applyChanges: (element, game) ->
+  window.game = game
+  $.each game.changes.table.added, (i, stack) ->
+    if(stack.length == 1)
+      stackDiv = GameHelper.createElement 'div', 'cards-stack'
+      $(stackDiv).append GameHelper.createCardDiv(stack[0], 'attack-card')
+      $('#table').append stackDiv
+    else if(stack.length == 2)
+      if(stack[0]?)
+        stackDiv = GameHelper.createElement 'div', 'cards-stack'
+        $(stackDiv).append GameHelper.createCardDiv(stack[0], 'attack-card')
+        $(stackDiv).append GameHelper.createCardDiv(stack[1], 'defense-card')
+        $('#table').append stackDiv
+      else
+        lastStack = $('#table .cards-stack').last()
+        lastStack.append GameHelper.createCardDiv(stack[1], "defense-card")
+    else
+      console.log "Error - expected length 1 or 2 " + stack
+
 loadData: (element, game) ->
   # TODO This is unefficient as I clean things every time I load them from server
   # Anyway I don't want to spend too much time learning JS here, so this is a fixitem for future
@@ -41,7 +60,6 @@ loadData: (element, game) ->
   @installHandlers()
 
 card_click: (card) ->
-  console.log card
   if card instanceof HTMLElement
     card = {"card": card.dataset.card, "suit": card.dataset.suit}
   # TODO Error handling
@@ -52,9 +70,9 @@ card_click: (card) ->
       move: (if game.myMove then 'put' else 'beat')
       card: card
     success: (result) ->
-      GameHelper.loadData($('#gamefield'), result.game)
+      #      console.log(result)
     error: (result, status, errorThrown) ->
-      console.log result
+      #      console.log result
 
 installHandlers: ->
   $('#hand .card').click((event) -> GameHelper.card_click event.target)
