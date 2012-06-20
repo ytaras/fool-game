@@ -31,7 +31,7 @@ describe 'GameHelper', ->
   describe "load game", ->
     beforeEach ->
       jasmine.getFixtures().load('game.html')
-      GameHelper.loadData($('#gamefield'), @game)
+      GameHelper.loadData(@game)
     it "creates trump as a card", ->
       expect($('#trump')).toContain('div.card')
     it "shows deck", ->
@@ -41,13 +41,13 @@ describe 'GameHelper', ->
     it "shows only trump if 1 card in deck", ->
       jasmine.getFixtures().load('game.html')
       @game.deck = 1
-      GameHelper.loadData($('#gamefield'), @game)
+      GameHelper.loadData(@game)
       expect($('#trump')).toBeVisible()
       expect($('#deck')).not.toBeVisible()
     it "shows only trump if 1 card in deck", ->
       jasmine.getFixtures().load('game.html')
       @game.deck = 0
-      GameHelper.loadData($('#gamefield'), @game)
+      GameHelper.loadData(@game)
       expect($('#trump')).not.toBeVisible()
       expect($('#deck')).not.toBeVisible()
     it "shows table cards", ->
@@ -77,7 +77,7 @@ describe 'GameHelper', ->
       beforeEach ->
         @game.myMove = true
         jasmine.getFixtures().load('game.html')
-        GameHelper.loadData $("#gamefield"), @game
+        GameHelper.loadData @game
       it "issues an ajax request on put", ->
         GameHelper.card_click @game.cards[0]
         options = $.ajax.mostRecentCall.args[0]
@@ -97,7 +97,7 @@ describe 'GameHelper', ->
       beforeEach ->
         @game.myMove = false
         jasmine.getFixtures().load('game.html')
-        GameHelper.loadData $("#gamefield"), @game
+        GameHelper.loadData @game
       it "issues an ajax request on put", ->
         GameHelper.card_click @game.cards[0]
         options = $.ajax.mostRecentCall.args[0]
@@ -171,8 +171,8 @@ describe 'GameHelper', ->
               {suit: 'Spade', card: '8'}
             ]
       jasmine.getFixtures().load('game.html')
-      GameHelper.loadData($('#gamefield'), @game)
-      GameHelper.applyChanges($('#gamefield'), @result)
+      GameHelper.loadData @game
+      GameHelper.applyChanges @result
     it 'has result', ->
       expect(@result).toBeDefined()
       expect($('#table .cards-stack .card')).toExist()

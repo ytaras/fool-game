@@ -33,7 +33,7 @@ removeFromTable: (removed) ->
   $.each removed, (i, card) ->
     $('#table .' + GameHelper.class_name(card) + '.card').remove()
 
-applyChanges: (element, game) ->
+applyChanges: (game) ->
   window.game = game
   @addToTable(game.changes.table.added)
   @removeFromTable(game.changes.table.removed)
@@ -49,15 +49,15 @@ showOpponentCards: (cards) ->
     currentCards.slice(0, currentCards.length - cards).remove()
 
 
-loadData: (element, game) ->
+loadData: (game) ->
   window.game = game
-  element.find('#trump').append GameHelper.createCardDiv(game.trumpCard)
+  $('#trump').append GameHelper.createCardDiv(game.trumpCard)
   GameHelper.visible('#deck', game.deck > 1)
   GameHelper.visible('#trump', game.deck > 0)
-  handElem = element.find('#hand')
+  handElem = $('#hand')
   $.each game.cards, (i, card) ->
     handElem.append GameHelper.createCardDiv card
-  tableElem = element.find('#table')
+  tableElem = $('#table')
   $.each game.table, (i, cards) ->
     stack = GameHelper.createElement("div", "cards-stack")
     $(stack).append GameHelper.createCardDiv(cards[0], "attack-card")
