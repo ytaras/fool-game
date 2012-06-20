@@ -33,11 +33,12 @@ removeFromTable: (removed) ->
   $.each removed, (i, card) ->
     $('#table .' + GameHelper.class_name(card) + '.card').remove()
 
-applyChanges: (game) ->
-  window.game = game
-  @addToTable(game.changes.table.added)
-  @removeFromTable(game.changes.table.removed)
-  @showOpponentCards(game.opponent)
+applyChanges: (result) ->
+  window.game = result.game
+  if result.changes? && result.changes.table?
+    @addToTable(result.changes.table.added) if result.changes.table.added?
+    @removeFromTable(result.changes.table.removed) if result.changes.table.removed?
+    @showOpponentCards(game.opponent)
 
 showOpponentCards: (cards) ->
   opponentElem = $('#opponent_cards')
@@ -77,7 +78,8 @@ card_click: (card) ->
       move: (if game.myMove then 'put' else 'beat')
       card: card
     success: (result) ->
-      #      console.log(result)
+      GameHelper.applyChanges(result)
+      console.log(result)
     error: (result, status, errorThrown) ->
       console.log result
 
@@ -113,4 +115,4 @@ class_name: (card) ->
 }
 
 $(document).ready () ->
-  GameHelper.loadData($('#gamefield'), window.gon.game) if window.gon?
+  GameHelper.loadData window.gon.game if window.gon?

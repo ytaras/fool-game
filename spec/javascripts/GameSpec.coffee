@@ -128,33 +128,34 @@ describe 'GameHelper', ->
   describe 'changes applier', ->
     beforeEach ->
       @result =
-        trumpCard:
-          suit: 'Heart'
-          card: 'Ace'
-        deck: 2
-        cards: [
-          {suit: 'Heart', card: '6'}
-          {suit: 'Spade', card: '7'}
-        ]
-        opponent: 5
-        myMove: true
-        table: [
-          [
-            {suit: 'Spade', card: '8'}
-            {suit: 'Spade', card: '9'}
+        game:
+          trumpCard:
+            suit: 'Heart'
+            card: 'Ace'
+          deck: 2
+          cards: [
+            {suit: 'Heart', card: '6'}
+            {suit: 'Spade', card: '7'}
           ]
-          [
-            {suit: 'Heart', card: '9'}
-            {suit: 'Heart', card: '10'}
+          opponent: 5
+          myMove: true
+          table: [
+            [
+              {suit: 'Spade', card: '8'}
+              {suit: 'Spade', card: '9'}
+            ]
+            [
+              {suit: 'Heart', card: '9'}
+              {suit: 'Heart', card: '10'}
+            ]
+            [
+              {suit: 'Diamond', card: '9'}
+              {suit: 'Diamond', card: '10'}
+            ]
+            [
+              {suit: 'Spade', card: 'Ace'},
+            ]
           ]
-          [
-            {suit: 'Diamond', card: '9'}
-            {suit: 'Diamond', card: '10'}
-          ]
-          [
-            {suit: 'Spade', card: 'Ace'},
-          ]
-        ]
         changes:
           table:
             added: [
