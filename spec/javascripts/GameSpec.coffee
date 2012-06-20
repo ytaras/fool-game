@@ -60,31 +60,6 @@ describe 'GameHelper', ->
       expect(secondStack).not.toContain(".defense-card")
     it "shows opponent cards", ->
       expect($("#opponent_cards .card").length).toBe(3)
-    describe 'when game is reloaded', ->
-      beforeEach ->
-        @game.table = [
-          [
-            {suit: 'Spade', card: '8'},
-            {suit: 'Spade', card: '9'}
-          ]
-          [
-            {suit: 'Heart', card: '9'}
-            {suit: 'Heart', card: '10'}
-          ]
-        ]
-        @game.opponent = 4
-        @game.deck = 1
-        GameHelper.loadData($('#gamefield'), @game)
-      it "adds card to a table", ->
-        expect($("#table .cards-stack").length).toBe(2)
-        secondStack = $("#table .cards-stack:gt(0)")
-        expect(secondStack).toContain(".attack-card.card.cards-hearts9")
-        expect(secondStack).toContain(".defense-card.card.cards-hearts10")
-      it "adds opponent cards to a table", ->
-        expect($("#opponent_cards .card").length).toBe(4)
-      it "adds opponent cards to a table", ->
-        expect($('#deck')).not.toBeVisible
-
 
   describe "card to image converter", ->
     verifyClass = (suit, card, image) ->
@@ -161,7 +136,7 @@ describe 'GameHelper', ->
           {suit: 'Heart', card: '6'}
           {suit: 'Spade', card: '7'}
         ]
-        opponent: 3
+        opponent: 5
         myMove: true
         table: [
           [
@@ -210,3 +185,8 @@ describe 'GameHelper', ->
       expect($("#table .cards-stack .defense-card.card.cards-diamonds10")).toExist()
     it 'removes card from table', ->
       expect($("#table .cards-stack .card.cards-spades8")).not.toExist()
+    it 'applies opponent cards amount', ->
+      expect($("#opponent_cards .card").length).toBe(5)
+    it 'applies opponent cards decrease', ->
+      GameHelper.showOpponentCards(2)
+      expect($("#opponent_cards .card").length).toBe(2)

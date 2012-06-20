@@ -33,25 +33,23 @@ removeFromTable: (removed) ->
   $.each removed, (i, card) ->
     $('#table .' + GameHelper.class_name(card) + '.card').remove()
 
-
-
 applyChanges: (element, game) ->
   window.game = game
-  GameHelper.addToTable(game.changes.table.added)
-  GameHelper.removeFromTable(game.changes.table.removed)
+  @addToTable(game.changes.table.added)
+  @removeFromTable(game.changes.table.removed)
+  @showOpponentCards(game.opponent)
+
+showOpponentCards: (cards) ->
+  opponentElem = $('#opponent_cards')
+  currentCards = $('#opponent_cards .card')
+  if currentCards.length < cards
+    for n in [(currentCards.length)...cards]
+      opponentElem.append GameHelper.createElement("div", "card cards-backblue-1")
+  else if currentCards.length > cards
+    currentCards.slice(0, currentCards.length - cards).remove()
 
 
 loadData: (element, game) ->
-  # TODO This is unefficient as I clean things every time I load them from server
-  # Anyway I don't want to spend too much time learning JS here, so this is a fixitem for future
-
-  # TODO Handle 'did nothing'
-  $('#table .cards-stack').remove()
-  $('#trump .card').remove()
-  $('#deck .card').remove()
-  $('#hand .card').remove()
-  $('#opponent_cards .card').remove()
-
   window.game = game
   element.find('#trump').append GameHelper.createCardDiv(game.trumpCard)
   GameHelper.visible('#deck', game.deck > 1)
@@ -65,9 +63,7 @@ loadData: (element, game) ->
     $(stack).append GameHelper.createCardDiv(cards[0], "attack-card")
     $(stack).append GameHelper.createCardDiv(cards[1], "defense-card") if cards.length > 1
     tableElem.append stack
-  opponentElem = element.find('#opponent_cards')
-  for n in [1..game.opponent]
-    opponentElem.append GameHelper.createElement("div", "card cards-backblue-1")
+  @showOpponentCards(game.opponent)
   @installHandlers()
 
 card_click: (card) ->
