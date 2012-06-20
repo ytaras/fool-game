@@ -11,9 +11,8 @@ createElement: (name, aClass, text) ->
   $(elem).text(text) if text?
   return elem
 
-applyChanges: (element, game) ->
-  window.game = game
-  $.each game.changes.table.added, (i, stack) ->
+addToTable: (added) ->
+  $.each added, (i, stack) ->
     if(stack.length == 1)
       stackDiv = GameHelper.createElement 'div', 'cards-stack'
       $(stackDiv).append GameHelper.createCardDiv(stack[0], 'attack-card')
@@ -29,6 +28,18 @@ applyChanges: (element, game) ->
         lastStack.append GameHelper.createCardDiv(stack[1], "defense-card")
     else
       console.log "Error - expected length 1 or 2 " + stack
+
+removeFromTable: (removed) ->
+  $.each removed, (i, card) ->
+    $('#table .' + GameHelper.class_name(card) + '.card').remove()
+
+
+
+applyChanges: (element, game) ->
+  window.game = game
+  GameHelper.addToTable(game.changes.table.added)
+  GameHelper.removeFromTable(game.changes.table.removed)
+
 
 loadData: (element, game) ->
   # TODO This is unefficient as I clean things every time I load them from server
@@ -72,7 +83,7 @@ card_click: (card) ->
     success: (result) ->
       #      console.log(result)
     error: (result, status, errorThrown) ->
-            console.log result
+      console.log result
 
 take: ->
   $.ajax
@@ -83,7 +94,7 @@ take: ->
     success: (result) ->
       #      console.log(result)
     error: (result, status, errorThrown) ->
-            console.log result
+      console.log result
 pass: ->
   $.ajax
     "type": "POST"
