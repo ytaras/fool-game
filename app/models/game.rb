@@ -111,7 +111,7 @@ class Game
   end
 
   def next_move(turn = true)
-    draw_cards(:player1)
+    added_cards_p1 = draw_cards(:player1)
     draw_cards(:player2)
 
     return if is_game_end
@@ -133,7 +133,7 @@ class Game
     end
 
     changed
-    notify_observers :event => :next_move, :game => self
+    notify_observers :event => :next_move, :game => self, :cards => added_cards_p1
   end
 
   def is_game_end

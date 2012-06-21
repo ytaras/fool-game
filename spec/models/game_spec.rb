@@ -67,7 +67,7 @@ describe Game do
     context 'with listener' do
       subject { @listener }
       specify { should have(1).items }
-      specify { should include :game => @game, :event => :next_move }
+      specify { should include :game => @game, :event => :next_move, :cards => @game.player1_cards }
     end
 
   end
@@ -196,7 +196,7 @@ describe Game do
       it_behaves_like 'listener with events' do
         let(:items) { [
             {:game => @game, :cards => [@card_on_table], :event => :take, :player => :player1},
-            {:game => @game, :event => :next_move}
+            {:game => @game, :event => :next_move, :cards => [@game.player1_cards.last]}
         ] }
       end
     end
@@ -209,6 +209,7 @@ describe Game do
         @game.beat(@game.player1_cards.last)
         @table_cards = @game.table.cards
         @listener.clear
+        @drawn = [@game.deck[0]]
         @game.pass
       }
       specify { should have(2).discarded }
@@ -220,7 +221,7 @@ describe Game do
       it_behaves_like 'listener with events' do
         let(:items) { [
             {:game => @game, :cards => @table_cards, :event => :dismiss},
-            {:game => @game, :event => :next_move}
+            {:game => @game, :event => :next_move, :cards => @drawn}
         ] }
       end
     end

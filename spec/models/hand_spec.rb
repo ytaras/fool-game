@@ -105,10 +105,11 @@ describe Hand do
       context "when enough cards" do
         before(:each) {
           @deck = Deck.new(Deck::SORTED_DECK.take(3))
-          subject.draw(@deck)
+          @result = subject.draw(@deck)
         }
         specify { should have(6).cards }
         specify { @deck.should have(1).cards }
+        specify { @result.should have(2).items }
       end
       context "when no enough cards" do
         before(:each) {

@@ -12,7 +12,9 @@ class Hand
   def draw(deck)
     cards_to_draw = 6 - size
     if cards_to_draw > 0
-      add deck.draw(cards_to_draw)
+      drawn = deck.draw(cards_to_draw)
+      add drawn
+      drawn
     end
   end
 
