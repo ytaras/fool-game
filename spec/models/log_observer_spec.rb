@@ -33,14 +33,16 @@ describe LogObserver do
   context 'when logging game events' do
     context 'when put and then beat' do
       before(:each) {
-        @observer.update :event => :put, :card => 'a'
-        @observer.update :event => :beat, :card => 'b'
+        game = OpenStruct.new(:current_move => :player1)
+        @observer.update :event => :put, :card => 'a', :game => game
+        @observer.update :event => :beat, :card => 'b', :game => game
       }
       subject { @observer.diff }
       its([:table]) { should include(:added => [%w(a b)]) }
+      its([:hand]) { should include(:removed => %w(a)) }
+
       context 'when take cards from table' do
         before(:each) {
-          @game = double('game')
           @observer.update :event => :take, :cards => %w(a b c)
         }
         its([:table]) { should include(:removed => %w(a b c)) }
@@ -49,13 +51,15 @@ describe LogObserver do
     end
     context 'when beat than put' do
       before(:each) {
-        @observer.update :event => :put, :card => 'a'
+        game = OpenStruct.new(:current_move => :player2)
+        @observer.update :event => :put, :card => 'a', :game => game
         @observer.clear
-        @observer.update :event => :beat, :card => 'b'
-        @observer.update :event => :put, :card => 'c'
+        @observer.update :event => :beat, :card => 'b', :game => game
+        @observer.update :event => :put, :card => 'c', :game => game
       }
       subject { @observer.diff }
       its([:table]) { should include(:added => [[nil, 'b'], %w(c)]) }
+      its([:hand]) { should include(:removed => %w(b)) }
     end
   end
 end

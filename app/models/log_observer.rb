@@ -22,16 +22,24 @@ class LogObserver
   end
 
   def diff
-    ret = {:table => {}}
+    ret = {:table => {}, :hand => {}}
     @items.each do |event|
       return unless event.is_a?(Hash)
       case event[:event]
         when :put
           ret[:table][:added] ||= []
-          ret[:table][:added] << [event[:card]] unless event[:card].nil?
+          ret[:hand][:removed] ||= []
+          unless event[:card].nil?
+            ret[:table][:added] << [event[:card]]
+            ret[:hand][:removed] << event[:card] if event[:game].current_move == :player1
+          end
         when :beat
           ret[:table][:added] ||= [[]]
-          ret[:table][:added].last[1] = event[:card] unless event[:card].nil?
+          ret[:hand][:removed] ||= []
+          unless event[:card].nil?
+            ret[:hand][:removed] << event[:card] unless event[:game].current_move == :player1
+            ret[:table][:added].last[1] = event[:card]
+          end
         when :take
           ret[:table][:added].clear unless ret[:table][:added].nil?
           ret[:table][:removed] = event[:cards]
