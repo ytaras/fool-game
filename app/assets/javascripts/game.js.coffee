@@ -29,15 +29,19 @@ addToTable: (added) ->
     else
       console.log "Error - expected length 1 or 2 " + stack
 
-removeFromTable: (removed) ->
+removeCards: (parent, removed) ->
   $.each removed, (i, card) ->
-    $('#table .' + GameHelper.class_name(card) + '.card').remove()
+    $(parent + ' .' + GameHelper.class_name(card) + '.card').remove()
 
 applyChanges: (result) ->
   window.game = result.game
-  if result.changes? && result.changes.table?
-    @addToTable(result.changes.table.added) if result.changes.table.added?
-    @removeFromTable(result.changes.table.removed) if result.changes.table.removed?
+  if result.changes?
+    if result.changes.table?
+      @addToTable(result.changes.table.added) if result.changes.table.added?
+      @removeCards('#table', result.changes.table.removed) if result.changes.table.removed?
+      $('#table .cards-stack:empty').remove()
+    if result.changes.hand?
+      @removeCards('#hand', result.changes.hand.removed) if result.changes.hand.removed?
     @showOpponentCards(game.opponent)
 
 showOpponentCards: (cards) ->

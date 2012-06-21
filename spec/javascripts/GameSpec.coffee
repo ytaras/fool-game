@@ -171,6 +171,10 @@ describe 'GameHelper', ->
             removed: [
               {suit: 'Spade', card: '8'}
             ]
+          hand:
+            removed: [
+              {suit: 'Heart', card: '6'}
+            ]
       jasmine.getFixtures().load('game.html')
       GameHelper.loadData @game
       GameHelper.applyChanges @result
@@ -191,3 +195,5 @@ describe 'GameHelper', ->
     it 'applies opponent cards decrease', ->
       GameHelper.showOpponentCards(2)
       expect($("#opponent_cards .card").length).toBe(2)
+    it 'applies hand card removal', ->
+      expect($('#hand .card.cards-hearts6')).not.toExist()
