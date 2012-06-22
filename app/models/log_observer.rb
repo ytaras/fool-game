@@ -49,6 +49,10 @@ class LogObserver
             ret[:hand][:added] << event[:cards]
             ret[:hand][:added].flatten!
           end
+        when :next_move
+          ret[:hand][:added] ||= []
+          ret[:hand][:added] << event[:cards]
+          ret[:hand][:added].flatten!
       end
     end
     ret

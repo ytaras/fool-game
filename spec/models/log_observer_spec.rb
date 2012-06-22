@@ -63,5 +63,12 @@ describe LogObserver do
       its([:table]) { should include(:added => [[nil, 'b'], %w(c)]) }
       its([:hand]) { should include(:removed => %w(b)) }
     end
+    context 'when take cards from deck' do
+      before(:each) {
+        @observer.update :event => :next_move, :cards => %w(a b c)
+      }
+      subject { @observer.diff }
+      its([:hand]) { should include(:added => %w(a b c)) }
+    end
   end
 end
