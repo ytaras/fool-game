@@ -43,10 +43,12 @@ describe LogObserver do
 
       context 'when take cards from table' do
         before(:each) {
-          @observer.update :event => :take, :cards => %w(a b c)
+          game = OpenStruct.new(:current_move => :player2)
+          @observer.update :event => :take, :cards => %w(a b c), :game => game
         }
         its([:table]) { should include(:removed => %w(a b c)) }
         its([:table]) { subject[:added].should be_empty }
+        its([:hand]) { should include(:added => %w(a b c)) }
       end
     end
     context 'when beat than put' do

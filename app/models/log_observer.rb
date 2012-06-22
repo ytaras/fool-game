@@ -41,10 +41,17 @@ class LogObserver
             ret[:table][:added].last[1] = event[:card]
           end
         when :take
+          ret[:hand][:added] ||= []
+          ret[:table][:removed] ||= []
           ret[:table][:added].clear unless ret[:table][:added].nil?
           ret[:table][:removed] = event[:cards]
+          if event[:game].current_move == :player2
+            ret[:hand][:added] << event[:cards]
+            ret[:hand][:added].flatten!
+          end
       end
     end
     ret
   end
+
 end
