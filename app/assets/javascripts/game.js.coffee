@@ -67,6 +67,11 @@ showOpponentCards: (cards) ->
     currentCards.slice(0, currentCards.length - cards).remove()
 
 
+errorHandler: (result) ->
+  console.log result
+  alert('Error on page, game will reload.\nNo game progress will be lost')
+  location.reload()
+
 loadData: (game) ->
   window.game = game
   $('#trump').append GameHelper.createCardDiv(game.trumpCard)
@@ -97,7 +102,7 @@ card_click: (card) ->
     success: (result) ->
       GameHelper.applyChanges(result)
     error: (result, status, errorThrown) ->
-      console.log result
+      GameHelper.errorHandler(result)
 
 take: ->
   $.ajax
@@ -108,7 +113,7 @@ take: ->
     success: (result) ->
       GameHelper.applyChanges(result)
     error: (result, status, errorThrown) ->
-      console.log result
+      GameHelper.errorHandler(result)
 pass: ->
   $.ajax
     "type": "POST"
@@ -118,7 +123,7 @@ pass: ->
     success: (result) ->
       GameHelper.applyChanges(result)
     error: (result, status, errorThrown) ->
-      console.log result
+      GameHelper.errorHandler(result)
 installHandlers: ->
   $('#hand .card').click((event) -> GameHelper.card_click event.target)
   $('.take').click((event) -> GameHelper.take())
