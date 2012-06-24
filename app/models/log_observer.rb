@@ -58,6 +58,8 @@ class LogObserver
           ret.add_card(:hand, :added, event[:cards]) if event[:cards]
         when :dismiss
           ret.add_card(:table, :removed, event[:cards]) if event[:cards]
+        when :end
+          ret[:winner] = (event[:winner] == :player1)
       end
     end
     ret

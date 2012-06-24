@@ -83,5 +83,12 @@ describe LogObserver do
       its([:table]) { should include(:added => [[:h]]) }
       its([:table]) { should include(:removed => %w(a b c)) }
     end
+    context 'when game ends' do
+      before(:each) {
+        @observer.update :event => :end, :winner => :player1
+      }
+      subject { @observer.diff }
+      its([:winner]) { should be_true }
+    end
   end
 end
