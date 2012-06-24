@@ -172,6 +172,9 @@ describe 'GameHelper', ->
               {suit: 'Spade', card: '8'}
             ]
           hand:
+            added: [
+              {suit: 'Spade', card: '10'}
+            ]
             removed: [
               {suit: 'Heart', card: '6'}
             ]
@@ -197,3 +200,5 @@ describe 'GameHelper', ->
       expect($("#opponent_cards .card").length).toBe(2)
     it 'applies hand card removal', ->
       expect($('#hand .card.cards-hearts6')).not.toExist()
+    it 'applies hand card removal', ->
+      expect($('#hand .card.cards-spades10')).toExist()

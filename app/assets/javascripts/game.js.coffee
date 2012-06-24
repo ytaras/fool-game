@@ -33,6 +33,13 @@ removeCards: (parent, removed) ->
   $.each removed, (i, card) ->
     $(parent + ' .' + GameHelper.class_name(card) + '.card').remove()
 
+addCards: (parent, added) ->
+  parentE = $(parent)
+  $.each added, (i, card) ->
+    el = GameHelper.createCardDiv(card)
+    parentE.append el
+    $(el).click((event) -> GameHelper.card_click event.target)
+
 applyChanges: (result) ->
   window.game = result.game
   if result.changes?
@@ -42,6 +49,8 @@ applyChanges: (result) ->
       $('#table .cards-stack:empty').remove()
     if result.changes.hand?
       @removeCards('#hand', result.changes.hand.removed) if result.changes.hand.removed?
+      console.log result.changes.hand
+      @addCards('#hand', result.changes.hand.added) if result.changes.hand.added?
     @showOpponentCards(game.opponent)
 
 showOpponentCards: (cards) ->
@@ -83,7 +92,6 @@ card_click: (card) ->
       card: card
     success: (result) ->
       GameHelper.applyChanges(result)
-      console.log(result)
     error: (result, status, errorThrown) ->
       console.log result
 
@@ -94,7 +102,7 @@ take: ->
     "data":
       move: 'take'
     success: (result) ->
-      #      console.log(result)
+      GameHelper.applyChanges(result)
     error: (result, status, errorThrown) ->
       console.log result
 pass: ->
@@ -104,7 +112,7 @@ pass: ->
     "data":
       move: 'pass'
     success: (result) ->
-      #      console.log(result)
+      GameHelper.applyChanges(result)
     error: (result, status, errorThrown) ->
       console.log result
 installHandlers: ->
