@@ -43,6 +43,10 @@ addCards: (parent, added) ->
 applyChanges: (result) ->
   window.game = result.game
   if result.changes?
+    if result.winner?
+      alertStr = if(result.winner) then 'You win' else 'You loose'
+      alert alertStr
+      location.reload()
     if result.changes.table?
       @addToTable(result.changes.table.added) if result.changes.table.added?
       @removeCards('#table', result.changes.table.removed) if result.changes.table.removed?
