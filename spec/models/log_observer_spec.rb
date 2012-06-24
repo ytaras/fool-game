@@ -5,9 +5,9 @@ describe LogObserver do
 
   subject { @observer }
   context do
-    before(:each) { 3.times { |x| subject.update(x) } }
+    before(:each) { 3.times { |x| subject.update({:x => x}) } }
     specify { should have(3).items }
-    its('to_a') { should == [0, 1, 2] }
+    its('to_a') { should == [{:x => 0}, {:x => 1}, {:x => 2}] }
     specify { should_not be_empty }
     context 'when cleared' do
       before(:each) { subject.clear }
@@ -74,13 +74,15 @@ describe LogObserver do
     context 'when discard cards from table' do
       before(:each) {
         game = OpenStruct.new(:current_move => :player2)
+        @observer.update :event => :beat, :card => :x, :game => game
         @observer.update :event => :dismiss, :cards => %w(a b c)
         @observer.update :event => :next_move, :cards => %w(e f g)
         @observer.update :event => :put, :card => :h, :game => game
       }
       subject { @observer.diff }
       its([:hand]) { should include(:added => %w(e f g)) }
-      its([:table]) { should include(:added => [[:h]]) }
+      its([:hand]) { should include(:removed => [:x]) }
+      its([:table]) { should include(:added => [[nil, :x], [:h]]) }
       its([:table]) { should include(:removed => %w(a b c)) }
     end
     context 'when game ends' do

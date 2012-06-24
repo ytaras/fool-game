@@ -27,7 +27,7 @@ describe Game do
 
   describe "when game starts" do
     it_behaves_like 'listener with events' do
-      let(:items) { {:game => @game, :event => :next_move, :cards => @game.player1_cards} }
+      let(:items) { {:game => OpenStruct.new(:current_move => @game.current_move), :event => :next_move, :cards => @game.player1_cards} }
     end
     its(:table) { should be_empty }
     its(:discarded) { should be_empty }
@@ -67,7 +67,7 @@ describe Game do
     context 'with listener' do
       subject { @listener }
       specify { should have(1).items }
-      specify { should include :game => @game, :event => :next_move, :cards => @game.player1_cards }
+      specify { should include :game => OpenStruct.new(:current_move => @game.current_move), :event => :next_move, :cards => @game.player1_cards }
     end
 
   end
@@ -86,7 +86,7 @@ describe Game do
         its(:table) { should include(@card) }
         specify { @result.should be_true }
         it_behaves_like 'listener with events' do
-          let(:items) { {:game => @game, :card => @card, :event => :put} }
+          let(:items) { {:game => OpenStruct.new(:current_move => :player1), :card => @card, :event => :put} }
         end
       end
       context "card not from hand" do
@@ -143,7 +143,7 @@ describe Game do
           its(:player1_cards) { should_not include(@beating_card) }
           its(:table) { should include(@beating_card) }
           it_behaves_like 'listener with events' do
-            let(:items) { {:game => @game, :card => @beating_card, :event => :beat} }
+            let(:items) { {:game => OpenStruct.new(:current_move => :player2), :card => @beating_card, :event => :beat} }
           end
         end
       end
@@ -195,8 +195,8 @@ describe Game do
       its(:table) { should be_empty }
       it_behaves_like 'listener with events' do
         let(:items) { [
-            {:game => @game, :cards => [@card_on_table], :event => :take, :player => :player1},
-            {:game => @game, :event => :next_move, :cards => []}
+            {:game => OpenStruct.new(:current_move => :player2), :cards => [@card_on_table], :event => :take, :player => :player1},
+            {:game => OpenStruct.new(:current_move => :player2), :event => :next_move, :cards => []}
         ] }
       end
     end
@@ -220,8 +220,8 @@ describe Game do
       its(:current_move) { should == :player1 }
       it_behaves_like 'listener with events' do
         let(:items) { [
-            {:game => @game, :cards => @table_cards, :event => :dismiss},
-            {:game => @game, :event => :next_move, :cards => @drawn}
+            {:game => OpenStruct.new(:current_move => :player2), :cards => @table_cards, :event => :dismiss},
+            {:game => OpenStruct.new(:current_move => :player1), :event => :next_move, :cards => @drawn}
         ] }
       end
     end
@@ -241,8 +241,8 @@ describe Game do
       its(:winner) { should == :player2 }
       it_behaves_like 'listener with events' do
         let(:items) { [
-            {:game => @game, :event => :take, :cards => @table_cards, :player => :player1},
-            {:game => @game, :event => :end, :winner => :player2}
+            {:game => OpenStruct.new(:current_move => :player2), :event => :take, :cards => @table_cards, :player => :player1},
+            {:game => OpenStruct.new(:current_move => :player2), :event => :end, :winner => :player2}
         ] }
       end
     end

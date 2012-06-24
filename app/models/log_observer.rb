@@ -7,6 +7,11 @@ class LogObserver
   end
 
   def update(i)
+    i = i.dup
+    unless i[:game].nil?
+      game = i[:game]
+      i[:game] = OpenStruct.new(:current_move => game.current_move)
+    end
     @items << i
   end
 
@@ -17,6 +22,8 @@ class LogObserver
     yield game
     game.delete_observer self
     res = diff
+    puts @items.inspect
+    puts res.inspect
     @items.clear
     res
   end
@@ -44,7 +51,9 @@ class LogObserver
           end
         when :beat
           unless event[:card].nil?
-            ret.add_card(:hand, :removed, event[:card]) unless event[:game].current_move == :player1
+            unless event[:game].current_move == :player1
+              ret.add_card(:hand, :removed, event[:card])
+            end
             ret[:table][:added] ||= [[]]
             ret[:table][:added].last[1] = event[:card]
           end

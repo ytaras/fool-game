@@ -43,7 +43,7 @@ addCards: (parent, added) ->
 applyChanges: (result) ->
   window.game = result.game
   if result.changes?
-    if result.winner?
+    if result.changes.winner?
       alertStr = if(result.winner) then 'You win' else 'You loose'
       alert alertStr
       location.reload()
