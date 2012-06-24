@@ -87,4 +87,28 @@ describe AiHelper do
     verify_and_beat(:Spade, :"7", :Spade, :Ace)
     @game.winner.should == :player2
   end
+
+  it 'should throw on take' do
+    start_deck = [
+        # Player1
+        Card.new(:Club, :"8"),
+        Card.new(:Heart, :"10"),
+        Card.new(:Diamond, :"9"),
+        Card.new(:Heart, :Ace),
+        Card.new(:Spade, :Ace),
+        Card.new(:Diamond, :Ace),
+        # Player2
+        Card.new(:Club, :"7"),
+        Card.new(:Heart, :"7"),
+        Card.new(:Diamond, :"8"),
+        Card.new(:Heart, :"9"),
+        Card.new(:Spade, :"7"),
+    ]
+    @game = helper.create_game(start_deck)
+    @game.trump.should == :Spade
+    @game.current_move.should == :player2
+    @game.table.should_not be_empty
+    @game.take
+    @game.table.should_not be_empty
+  end
 end

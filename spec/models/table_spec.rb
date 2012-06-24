@@ -46,9 +46,11 @@ describe Table do
     before(:each) {
       subject.put(Table::SORTED_DECK[0])
       subject.beat(Table::SORTED_DECK[1])
+      subject.put(Table::SORTED_DECK[0])
       subject.clear
     }
     specify { should be_empty }
+    its(:move) { should == :attack }
   end
 
   describe :available do

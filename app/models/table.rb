@@ -2,7 +2,6 @@ class Table
   include ConstantsHelper::GameConstants
 
   delegate :empty?, :include?, :to => :cards
-  delegate :clear, :to => :@stacks
   attr_reader :move, :stacks
   attr_accessor :trump
 
@@ -42,4 +41,8 @@ class Table
     @stacks.last[0]
   end
 
+  def clear
+    @move = :attack
+    @stacks.clear
+  end
 end
