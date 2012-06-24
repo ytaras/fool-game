@@ -18,6 +18,11 @@ class GameController < ApplicationController
     end
   end
 
+  def restart
+    session[:game] = create_game
+    redirect_to :action => :play
+  end
+
   def move
     @game = create_or_load_game
     log_observer = LogObserver.new

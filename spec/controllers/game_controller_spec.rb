@@ -43,6 +43,19 @@ describe GameController do
     end
   end
 
+  describe :restart do
+    include_examples "protected", :play, :get
+
+    it 'recreates game' do
+      login
+      get :play
+      old_game = assigns[:game]
+      get :restart
+      response.should redirect_to(game_play_path)
+      session[:game].should_not === old_game
+    end
+  end
+
   describe :move do
     include_examples "protected", :move, :post
     describe :ajax do
