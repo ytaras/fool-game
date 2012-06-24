@@ -27,7 +27,7 @@ describe Game do
 
   describe "when game starts" do
     it_behaves_like 'listener with events' do
-      let(:items) { {:game => @game, :event => :next_move} }
+      let(:items) { {:game => @game, :event => :next_move, :cards => @game.player1_cards} }
     end
     its(:table) { should be_empty }
     its(:discarded) { should be_empty }
@@ -196,7 +196,7 @@ describe Game do
       it_behaves_like 'listener with events' do
         let(:items) { [
             {:game => @game, :cards => [@card_on_table], :event => :take, :player => :player1},
-            {:game => @game, :event => :next_move, :cards => [@game.player1_cards.last]}
+            {:game => @game, :event => :next_move, :cards => []}
         ] }
       end
     end

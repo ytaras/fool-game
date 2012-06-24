@@ -15,6 +15,8 @@ class Hand
       drawn = deck.draw(cards_to_draw)
       add drawn
       drawn
+    else
+      []
     end
   end
 

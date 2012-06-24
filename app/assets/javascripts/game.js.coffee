@@ -109,8 +109,8 @@ pass: ->
       console.log result
 installHandlers: ->
   $('#hand .card').click((event) -> GameHelper.card_click event.target)
-  $('.take').click((event) -> GameHelper.take)
-  $('.pass').click((event) -> GameHelper.pass)
+  $('.take').click((event) -> GameHelper.take())
+  $('.pass').click((event) -> GameHelper.pass())
 
 visible: (element, value) ->
   $(element)[if value then 'show' else 'hide']()

@@ -23,36 +23,41 @@ class LogObserver
 
   def diff
     ret = {:table => {}, :hand => {}}
+
+    def ret.add_card(subject, qualifier, card)
+      self[subject] ||= {}
+      self[subject][qualifier] ||= []
+      if card.respond_to? :each
+        card.each { |x| self[subject][qualifier] << x }
+      else
+        self[subject][qualifier] << card
+      end
+    end
+
     @items.each do |event|
       return unless event.is_a?(Hash)
       case event[:event]
         when :put
-          ret[:table][:added] ||= []
-          ret[:hand][:removed] ||= []
           unless event[:card].nil?
-            ret[:table][:added] << [event[:card]]
-            ret[:hand][:removed] << event[:card] if event[:game].current_move == :player1
+            ret.add_card(:table, :added, [[event[:card]]])
+            ret.add_card(:hand, :removed, event[:card]) if event[:game].current_move == :player1
           end
         when :beat
-          ret[:table][:added] ||= [[]]
-          ret[:hand][:removed] ||= []
           unless event[:card].nil?
-            ret[:hand][:removed] << event[:card] unless event[:game].current_move == :player1
+            ret.add_card(:hand, :removed, event[:card]) unless event[:game].current_move == :player1
+            ret[:table][:added] ||= [[]]
             ret[:table][:added].last[1] = event[:card]
           end
         when :take
-          ret[:hand][:added] ||= []
-          ret[:table][:removed] ||= []
-          ret[:table][:added].clear unless ret[:table][:added].nil?
-          ret[:table][:removed] = event[:cards]
+          ret[:table][:added].clear unless ret[:table].nil? || ret[:table][:added].nil?
+          ret.add_card(:table, :removed, event[:cards])
           if event[:game].current_move == :player2
-            ret[:hand][:added] << event[:cards]
-            ret[:hand][:added].flatten!
+            ret.add_card(:hand, :added, event[:cards])
           end
         when :next_move
-          ret[:hand][:added] ||= []
-          ret[:hand][:added] << event[:cards]
-          ret[:hand][:added].flatten!
+          ret.add_card(:hand, :added, event[:cards]) if event[:cards]
+        when :dismiss
+          ret.add_card(:table, :removed, event[:cards]) if event[:cards]
       end
     end
     ret

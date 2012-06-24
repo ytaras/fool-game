@@ -70,5 +70,18 @@ describe LogObserver do
       subject { @observer.diff }
       its([:hand]) { should include(:added => %w(a b c)) }
     end
+
+    context 'when discard cards from table' do
+      before(:each) {
+        game = OpenStruct.new(:current_move => :player2)
+        @observer.update :event => :dismiss, :cards => %w(a b c)
+        @observer.update :event => :next_move, :cards => %w(e f g)
+        @observer.update :event => :put, :card => :h, :game => game
+      }
+      subject { @observer.diff }
+      its([:hand]) { should include(:added => %w(e f g)) }
+      its([:table]) { should include(:added => [[:h]]) }
+      its([:table]) { should include(:removed => %w(a b c)) }
+    end
   end
 end
