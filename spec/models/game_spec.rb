@@ -31,7 +31,7 @@ describe Game do
     end
     its(:table) { should be_empty }
     its(:discarded) { should be_empty }
-    its(:winner) { should be_nil }
+    its(:winner) { should be_false }
     specify { should have(36 - 6 - 6).deck }
     specify { should have(6).player1_cards }
     specify { should have(6).player2_cards }
@@ -238,7 +238,8 @@ describe Game do
         @table_cards = @game.table.cards
         @game.take
       }
-      its(:winner) { should == :player2 }
+      subject { @listener.diff }
+      its([:winner]) { should == :player2 }
       it_behaves_like 'listener with events' do
         let(:items) { [
             {:game => OpenStruct.new(:current_move => :player2), :event => :take, :cards => @table_cards, :player => :player1},

@@ -10,6 +10,7 @@ class GameController < ApplicationController
 
   def play
     @game = create_or_load_game
+    session[:game] = @game = create_game if @game.winner
     gon.jbuilder
 
     respond_to do |format|

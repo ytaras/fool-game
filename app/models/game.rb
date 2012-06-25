@@ -16,7 +16,7 @@ class Game
   end
 
   attr_accessor :current_move
-  attr_reader :deck, :trump_card, :table, :discarded, :winner
+  attr_reader :deck, :trump_card, :table, :discarded
 
   delegate :trump_card, :trump, :to => :deck
   delegate :cards, :to => :player1, :prefix => :player1
@@ -47,6 +47,7 @@ class Game
     if cards.put(card, table)
       changed
       notify_observers :event => :put, :card => card, :game => self
+      return if is_game_end
       true
     end
   end
@@ -63,6 +64,7 @@ class Game
     if @hands[current_defense].beat(beating, table)
       changed
       notify_observers :event => :beat, :card => beating, :game => self
+      return if is_game_end
       true
     end
   end
@@ -75,6 +77,21 @@ class Game
     @hands[:player2]
   end
 
+
+  def winner
+    p1 = @hands[:player1].empty?
+    p2 = @hands[:player2].empty?
+    return false unless p1 || p2
+    if p1
+      if p2
+        :draw
+      else
+        :player1
+      end
+    elsif p2
+      :player2
+    end
+  end
 
   private
 
@@ -137,21 +154,13 @@ class Game
   end
 
   def is_game_end
-    p1 = @hands[:player1].empty?
-    p2 = @hands[:player2].empty?
-    return false unless p1 || p2
-    if p1
-      if p2
-        @winner = :none
-      else
-        @winner = :player1
-      end
-    elsif p2
-      @winner = :player2
+    if winner
+      changed
+      notify_observers :event => :end, :game => self, :winner => winner
+      true
+    else
+      false
     end
-    changed
-    notify_observers :event => :end, :game => self, :winner => winner
-    true
-  end
 
+  end
 end

@@ -44,8 +44,15 @@ applyChanges: (result) ->
   window.game = result.game
   if result.changes?
     if result.changes.winner?
-      alertStr = if(result.winner) then 'You win' else 'You loose'
+      alertStr = switch result.changes.winner
+        when 'player1' then
+          'You win'
+        when 'player2' then
+          'You loose'
+        else
+          'Draw'
       alert alertStr
+      # TODO How do I use routes here?
       location.reload()
     if result.changes.table?
       @addToTable(result.changes.table.added) if result.changes.table.added?
@@ -53,7 +60,6 @@ applyChanges: (result) ->
       $('#table .cards-stack:empty').remove()
     if result.changes.hand?
       @removeCards('#hand', result.changes.hand.removed) if result.changes.hand.removed?
-      console.log result.changes.hand
       @addCards('#hand', result.changes.hand.added) if result.changes.hand.added?
     @showOpponentCards(game.opponent)
 

@@ -68,7 +68,8 @@ class LogObserver
         when :dismiss
           ret.add_card(:table, :removed, event[:cards]) if event[:cards]
         when :end
-          ret[:winner] = (event[:winner] == :player1)
+          puts "Event - #{event.inspect}"
+          ret[:winner] = event[:winner]
       end
     end
     ret

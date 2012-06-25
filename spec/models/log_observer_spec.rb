@@ -90,7 +90,7 @@ describe LogObserver do
         @observer.update :event => :end, :winner => :player1
       }
       subject { @observer.diff }
-      its([:winner]) { should be_true }
+      its([:winner]) { should == :player1 }
     end
   end
 end
