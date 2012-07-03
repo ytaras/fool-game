@@ -45,12 +45,9 @@ applyChanges: (result) ->
   if result.changes?
     if result.changes.winner?
       alertStr = switch result.changes.winner
-        when 'player1' then
-          'You win'
-        when 'player2' then
-          'You loose'
-        else
-          'Draw'
+        when 'player1' then 'You win'
+        when 'player2' then 'You loose'
+        else 'Draw'
       alert alertStr
       # TODO How do I use routes here?
       location.reload()
